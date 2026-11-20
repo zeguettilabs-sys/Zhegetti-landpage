@@ -1,0 +1,47 @@
+{
+  "colors": {
+    "outside": "#050505",
+    "screen": "#111111",
+    "panel": "#1C1C1C",
+    "screenLight": "#262626",
+    "text": "#E4DFD9",
+    "emphasis": "#FCF8EF",
+    "muted": "#9E9993",
+    "accent": "#CB343B",
+    "border": "#343434",
+    "mockup": "#E7E2DC"
+  },
+  "fonts": {
+    "interface": "VT323",
+    "editorial": "Bodoni Moda",
+    "body": "Inter"
+  },
+  "designReference": {
+    "width": 1440,
+    "height": 960,
+    "detailContentHeight": 2140
+  },
+  "proposedImplementation": {
+    "perspectivePx": 1800,
+    "carouselTransitionMs": [
+      400,
+      550
+    ],
+    "pageTransitionMs": [
+      250,
+      350
+    ],
+    "dragStartPx": 8,
+    "dragCommitPx": 48,
+    "autoAdvance": false,
+    "clickAnyCardOpensItsService": true,
+    "breakpointsPx": {
+      "tablet": 768,
+      "desktop": 1200
+    }
+  },
+  "notes": [
+    "Las cifras de proposedImplementation son valores iniciales de ajuste, no mediciones exactas de Arc o Figma.",
+    "Mantener cuatro servicios únicos aunque se repita una tarjeta visual en los extremos."
+  ]
+}

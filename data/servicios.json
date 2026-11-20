@@ -1,0 +1,256 @@
+{
+  "brand": "Zeguetti",
+  "tagline": "Desarrollamos sistemas y soluciones digitales que simplifican tu operación y acompañan tu crecimiento.",
+  "services": [
+    {
+      "id": "sistemas-a-medida",
+      "order": 1,
+      "name": "Sistemas a medida",
+      "path": "/servicios/sistemas-a-medida",
+      "category": "SOFTWARE EMPRESARIAL",
+      "title": "Tu operación, en un solo sistema.",
+      "titleLines": [
+        "Tu operación,",
+        "en un solo sistema."
+      ],
+      "description": "Desarrollamos sistemas a medida para conectar tus procesos, ordenar la información y darle a tu equipo más tiempo para avanzar.",
+      "descriptionDisplayLines": [
+        "DESARROLLAMOS SISTEMAS A MEDIDA PARA CONECTAR",
+        "TUS PROCESOS, ORDENAR LA INFORMACIÓN Y DARLE",
+        "A TU EQUIPO MÁS TIEMPO PARA AVANZAR."
+      ],
+      "caption": "Centraliza ventas, inventario y procesos en un sistema hecho para tu empresa.",
+      "tags": [
+        "VENTAS E INVENTARIO",
+        "GESTIÓN DE EQUIPOS",
+        "REPORTES Y ACCESOS"
+      ],
+      "features": [
+        {
+          "title": "Control de tu operación",
+          "description": "Ventas, pedidos e inventario organizados en un mismo lugar."
+        },
+        {
+          "title": "Flujos para tu equipo",
+          "description": "Pantallas y permisos adaptados a la forma en que trabajan."
+        },
+        {
+          "title": "Información para decidir",
+          "description": "Reportes claros y datos disponibles cuando los necesitas."
+        }
+      ],
+      "mockup": "dashboard",
+      "mockupLabel": "Vista ilustrativa",
+      "nextService": "aplicaciones-web"
+    },
+    {
+      "id": "aplicaciones-web",
+      "order": 2,
+      "name": "Aplicaciones web",
+      "path": "/servicios/aplicaciones-web",
+      "category": "PRODUCTOS DIGITALES",
+      "title": "Tu negocio, a un clic de distancia.",
+      "titleLines": [
+        "Tu negocio,",
+        "a un clic de distancia."
+      ],
+      "description": "Creamos aplicaciones web para conectar tu negocio con clientes y equipos. una experiencia clara, accesible y adaptada a cada dispositivo.",
+      "descriptionDisplayLines": [
+        "CREAMOS APLICACIONES WEB PARA CONECTAR TU",
+        "NEGOCIO CON CLIENTES Y EQUIPOS. UNA EXPERIENCIA",
+        "CLARA, ACCESIBLE Y ADAPTADA A CADA DISPOSITIVO."
+      ],
+      "caption": "Conecta tu negocio con clientes y equipos desde cualquier dispositivo.",
+      "tags": [
+        "PORTALES DE CLIENTES",
+        "PLATAFORMAS INTERNAS",
+        "EXPERIENCIA RESPONSIVE"
+      ],
+      "features": [
+        {
+          "title": "Un portal para tus clientes",
+          "description": "Solicitudes, documentos y seguimiento desde una sola cuenta."
+        },
+        {
+          "title": "Una herramienta para tu equipo",
+          "description": "Gestiona procesos internos desde cualquier navegador."
+        },
+        {
+          "title": "Diseño para cada pantalla",
+          "description": "Una experiencia consistente en móvil, tablet y escritorio."
+        }
+      ],
+      "mockup": "portal",
+      "mockupLabel": "Vista ilustrativa",
+      "nextService": "automatizacion"
+    },
+    {
+      "id": "automatizacion",
+      "order": 3,
+      "name": "Automatización",
+      "path": "/servicios/automatizacion",
+      "category": "PROCESOS CONECTADOS",
+      "title": "Menos tareas. Más tiempo para avanzar.",
+      "titleLines": [
+        "Menos tareas.",
+        "Más tiempo para avanzar."
+      ],
+      "description": "Transformamos las tareas repetitivas en flujos que conectan información y acciones. tu equipo puede concentrarse en lo que necesita criterio.",
+      "descriptionDisplayLines": [
+        "TRANSFORMAMOS LAS TAREAS REPETITIVAS EN FLUJOS",
+        "QUE CONECTAN INFORMACIÓN Y ACCIONES. TU EQUIPO",
+        "PUEDE CONCENTRARSE EN LO QUE NECESITA CRITERIO."
+      ],
+      "caption": "Transforma tareas repetitivas en flujos que le devuelven tiempo a tu equipo.",
+      "tags": [
+        "TAREAS REPETITIVAS",
+        "REGLAS DE NEGOCIO",
+        "ALERTAS Y SEGUIMIENTO"
+      ],
+      "features": [
+        {
+          "title": "Detectar el punto de partida",
+          "description": "Un formulario, un cambio de estado o una nueva solicitud."
+        },
+        {
+          "title": "Conectar las acciones",
+          "description": "Validar datos, actualizar registros y generar documentos."
+        },
+        {
+          "title": "Mantener la visibilidad",
+          "description": "Alertas y seguimiento para saber qué ocurrió en cada paso."
+        }
+      ],
+      "mockup": "workflow",
+      "mockupLabel": "Vista ilustrativa",
+      "nextService": "integraciones-apis"
+    },
+    {
+      "id": "integraciones-apis",
+      "order": 4,
+      "name": "Integraciones y APIs",
+      "path": "/servicios/integraciones-apis",
+      "category": "HERRAMIENTAS EN EQUIPO",
+      "title": "Tus herramientas, trabajando en equipo.",
+      "titleLines": [
+        "Tus herramientas,",
+        "trabajando en equipo."
+      ],
+      "description": "Conectamos los sistemas que ya utilizas para que la información fluya entre ellos. menos datos duplicados y una operación más coherente.",
+      "descriptionDisplayLines": [
+        "CONECTAMOS LOS SISTEMAS QUE YA UTILIZAS PARA",
+        "QUE LA INFORMACIÓN FLUYA ENTRE ELLOS. MENOS",
+        "DATOS DUPLICADOS Y UNA OPERACIÓN MÁS COHERENTE."
+      ],
+      "caption": "Conecta tus herramientas para que la información fluya entre ellas.",
+      "tags": [
+        "CONEXIÓN ENTRE SISTEMAS",
+        "SINCRONIZACIÓN DE DATOS",
+        "APIS Y WEBHOOKS"
+      ],
+      "features": [
+        {
+          "title": "Conectar lo que ya usas",
+          "description": "Tu sistema, tienda, CRM o plataforma de pagos."
+        },
+        {
+          "title": "Compartir la información",
+          "description": "Datos consistentes entre las herramientas de tu operación."
+        },
+        {
+          "title": "Preparar el siguiente paso",
+          "description": "Conexiones que pueden evolucionar con las necesidades del negocio."
+        }
+      ],
+      "mockup": "integrations",
+      "mockupLabel": "Vista ilustrativa",
+      "nextService": "landing-pages"
+    },
+    {
+      "id": "landing-pages",
+      "order": 5,
+      "name": "Landing pages",
+      "path": "/servicios/landing-pages",
+      "category": "PRESENCIA DIGITAL",
+      "title": "Tu negocio, listo para vender en internet.",
+      "titleLines": [
+        "Tu negocio,",
+        "listo para vender."
+      ],
+      "description": "Diseñamos landing pages rápidas y claras que presentan tu servicio, generan confianza y convierten visitas en consultas por WhatsApp o formulario.",
+      "descriptionDisplayLines": [
+        "DISEÑAMOS LANDING PAGES RÁPIDAS Y CLARAS QUE",
+        "PRESENTAN TU SERVICIO, GENERAN CONFIANZA Y",
+        "CONVIERTEN VISITAS EN CONSULTAS REALES."
+      ],
+      "caption": "Una página que presenta tu negocio y convierte visitas en clientes.",
+      "tags": [
+        "DISEÑO A MEDIDA",
+        "SEO Y VELOCIDAD",
+        "WHATSAPP Y FORMULARIOS"
+      ],
+      "features": [
+        {
+          "title": "Un mensaje claro",
+          "description": "Tu propuesta, servicios y experiencia contados en una sola página."
+        },
+        {
+          "title": "Lista para Google",
+          "description": "Optimizada para buscadores, redes sociales y carga rápida en el celular."
+        },
+        {
+          "title": "Contacto directo",
+          "description": "Botones de WhatsApp, llamada y formularios para captar consultas."
+        }
+      ],
+      "mockup": "landing",
+      "mockupLabel": "Vista ilustrativa",
+      "nextService": "sistemas-a-medida",
+      "example": {
+        "label": "Dalena Arévalo — Abogada",
+        "url": "https://www.dalenabogada.com/",
+        "domain": "dalenabogada.com",
+        "description": "Landing page para una abogada especialista en Contratación Pública y Arbitraje en Lima: servicios, experiencia y consulta directa por WhatsApp."
+      }
+    }
+  ],
+  "common": {
+    "capabilitiesLabel": "Lo que podemos construir",
+    "capabilitiesTitle": "Una solución que tiene sentido para ti.",
+    "processLabel": "Cómo lo hacemos",
+    "processTitle": "De tu desafío a una solución real.",
+    "process": [
+      {
+        "title": "Descubrimos",
+        "description": "Entendemos tu operación."
+      },
+      {
+        "title": "Diseñamos",
+        "description": "Definimos una solución clara."
+      },
+      {
+        "title": "Desarrollamos",
+        "description": "Construimos y validamos contigo."
+      },
+      {
+        "title": "Acompañamos",
+        "description": "Lanzamos y seguimos mejorando."
+      }
+    ],
+    "contactTitle": "Hablemos de lo que quieres mejorar.",
+    "contactDescription": "Cuéntanos cómo funciona hoy tu negocio y qué necesitas simplificar."
+  },
+  "siteConfig": {
+    "email": "contacto@zeguetti.com",
+    "whatsappUrl": null,
+    "domain": null,
+    "contactEndpoint": null,
+    "edition": "2026",
+    "locationLabel": "Perú",
+    "foundationYearConfirmed": false
+  },
+  "notes": [
+    "El texto de capacidades y fichas proviene del diseño; los captions 02 a 04 se proponen para la implementación.",
+    "Las cifras y pantallas son ilustrativas. Los canales de contacto requieren configuración del dueño."
+  ]
+}

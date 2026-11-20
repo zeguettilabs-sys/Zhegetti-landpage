@@ -1,0 +1,126 @@
+import disenoJson from '../../data/diseno.json';
+import serviciosJson from '../../data/servicios.json';
+
+export type ServiceMockupType = 'dashboard' | 'portal' | 'workflow' | 'integrations' | 'landing';
+
+/** Proyecto publicado que sirve de ejemplo del servicio. */
+export interface ServiceExample {
+  label: string;
+  url: string;
+  domain: string;
+  description: string;
+}
+
+export interface ServiceFeature {
+  title: string;
+  description: string;
+}
+
+export interface ServiceItem {
+  id: string;
+  order: number;
+  name: string;
+  path: string;
+  category: string;
+  title: string;
+  titleLines: string[];
+  description: string;
+  descriptionDisplayLines: string[];
+  caption: string;
+  tags: string[];
+  features: ServiceFeature[];
+  mockup: ServiceMockupType;
+  mockupLabel: string;
+  nextService: string;
+  example?: ServiceExample;
+}
+
+export interface ProcessStep {
+  title: string;
+  description: string;
+}
+
+export interface CommonCopy {
+  capabilitiesLabel: string;
+  capabilitiesTitle: string;
+  processLabel: string;
+  processTitle: string;
+  process: ProcessStep[];
+  contactTitle: string;
+  contactDescription: string;
+}
+
+export interface SiteConfigData {
+  email: string | null;
+  whatsappUrl: string | null;
+  domain: string | null;
+  contactEndpoint: string | null;
+  edition: string;
+  locationLabel: string;
+  foundationYearConfirmed: boolean;
+}
+
+export interface ServicesPayload {
+  brand: string;
+  tagline: string;
+  services: ServiceItem[];
+  common: CommonCopy;
+  siteConfig: SiteConfigData;
+}
+
+export interface DesignConfig {
+  colors: Record<string, string>;
+  fonts: {
+    interface: string;
+    editorial: string;
+    body: string;
+  };
+  designReference: {
+    width: number;
+    height: number;
+    detailContentHeight: number;
+  };
+  proposedImplementation: {
+    perspectivePx: number;
+    carouselTransitionMs: number[];
+    pageTransitionMs: number[];
+    dragStartPx: number;
+    dragCommitPx: number;
+    autoAdvance: boolean;
+    clickAnyCardOpensItsService: boolean;
+    breakpointsPx: {
+      tablet: number;
+      desktop: number;
+    };
+  };
+}
+
+const payload = serviciosJson as ServicesPayload;
+
+export const brandName = payload.brand;
+export const brandTagline = payload.tagline;
+export const services: ServiceItem[] = payload.services;
+export const commonCopy: CommonCopy = payload.common;
+export const rawSiteConfig: SiteConfigData = payload.siteConfig;
+export const designConfig: DesignConfig = disenoJson as DesignConfig;
+
+export function wrapIndex(index: number, total: number): number {
+  if (total <= 0) return 0;
+  return ((index % total) + total) % total;
+}
+
+export function getServiceById(serviceId?: string): ServiceItem | undefined {
+  if (!serviceId) return undefined;
+  return services.find((item) => item.id === serviceId);
+}
+
+export function getServiceIndexById(serviceId?: string | null): number {
+  if (!serviceId) return -1;
+  return services.findIndex((item) => item.id === serviceId);
+}
+
+export function formatOrderFraction(order: number, total = services.length): string {
+  const paddedOrder = String(order).padStart(2, '0');
+  const paddedTotal = String(total).padStart(2, '0');
+  return `${paddedOrder} / ${paddedTotal}`;
+}

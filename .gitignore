@@ -1,0 +1,29 @@
+# Dependencias y compilados
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Pruebas
+test-results/
+playwright-report/
+blob-report/
+capturas/
+
+# Variables locales
+.env
+.env.*
+!.env.example
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+*.log
+
+# Material interno de trabajo (no publico)
+00_LEEME.txt
+01_PROMPT_GEMINI.txt
+02_ESPECIFICACION.md
+MANIFIESTO.json
+referencias/

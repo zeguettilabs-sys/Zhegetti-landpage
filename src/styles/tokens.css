@@ -1,0 +1,36 @@
+:root {
+  /* Paleta base tomada de data/diseno.json */
+  --color-outside: #050505;
+  --color-screen: #111111;
+  --color-screen-deep: #0b0b0b;
+  --color-panel: #1c1c1c;
+  --color-screen-light: #262626;
+  --color-text: #e4dfd9;
+  --color-emphasis: #fcf8ef;
+  --color-muted: #9e9993;
+  --color-accent: #cb343b;
+  --color-accent-readable: #e25359;
+  --color-border: #343434;
+  --color-border-subtle: #242424;
+  --color-border-card: #484848;
+  --color-mockup: #e7e2dc;
+  --color-mockup-bar: #d9d3cc;
+  --color-mockup-card: #f4f0e9;
+  --color-mockup-border: #c9c2b8;
+  --color-mockup-ink: #1d1c1a;
+  --color-mockup-muted: #6f6860;
+
+  /* Tipografias */
+  --font-interface: 'VT323', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-editorial: 'Bodoni Moda', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Escala y movimiento */
+  --crt-bezel-padding: clamp(10px, 2.4vw, 36px);
+  --crt-radius: clamp(24px, 2.8vw, 42px);
+  --vhs-depth: clamp(15px, 1.3vw, 21px);
+  --crt-perspective: 1800px;
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --carousel-duration: 480ms;
+  --page-duration: 300ms;
+}

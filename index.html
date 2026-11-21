@@ -45,10 +45,21 @@
 
     <!--seo:jsonld-->
 
-    <!-- Aplica el modo blanco y negro antes de pintar, sin parpadeo -->
+    <!-- Aplica el modo blanco y negro y el modo ahorro antes de pintar, sin parpadeo -->
     <script>
       try {
-        if (localStorage.getItem('zeguetti-bw') === '1') document.documentElement.classList.add('bw');
+        var root = document.documentElement;
+        if (localStorage.getItem('zeguetti-bw') === '1') root.classList.add('bw');
+        // Modo ahorro: la eleccion del visitante manda; sin eleccion, equipos de gama baja
+        var pref = localStorage.getItem('zeguetti-lite');
+        var nav = navigator;
+        var net = nav.connection || {};
+        var cores = nav.hardwareConcurrency || 8;
+        var mem = nav.deviceMemory || 8;
+        var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        var low =
+          !!net.saveData || /2g$/.test(net.effectiveType || '') || mem <= 2 || cores <= 2 || (coarse && cores <= 4 && mem <= 4);
+        if (pref === '1' || (pref !== '0' && low)) root.classList.add('lite');
       } catch (e) {}
     </script>
   </head>

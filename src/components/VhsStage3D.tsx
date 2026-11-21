@@ -319,6 +319,8 @@ const approach = (current: number, target: number, speed: number, dt: number) =>
  * Se prueba en un lienzo aparte para no ensuciar la consola con errores de Three.
  */
 export function hasHardwareWebGL2(): boolean {
+  // Modo ahorro: sin WebGL
+  if (document.documentElement.classList.contains('lite')) return false;
   try {
     const probe = document.createElement('canvas');
     const gl = probe.getContext('webgl2', { failIfMajorPerformanceCaveat: true });
@@ -327,6 +329,25 @@ export function hasHardwareWebGL2(): boolean {
     const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
     gl.getExtension('WEBGL_lose_context')?.loseContext();
     return !/swiftshader|llvmpipe|software|basic render/i.test(name);
+  } catch {
+    return false;
+  }
+}
+
+/** Lee una rejilla de pixeles del lienzo: si todos son transparentes, no se dibujo nada. */
+function isCanvasBlank(renderer: THREE.WebGLRenderer): boolean {
+  try {
+    const gl = renderer.getContext();
+    const w = gl.drawingBufferWidth;
+    const h = gl.drawingBufferHeight;
+    const px = new Uint8Array(4);
+    for (let iy = 1; iy < 12; iy += 1) {
+      for (let ix = 1; ix < 12; ix += 1) {
+        gl.readPixels(Math.floor((w * ix) / 12), Math.floor((h * iy) / 12), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        if (px[3] > 0) return false;
+      }
+    }
+    return true;
   } catch {
     return false;
   }
@@ -406,9 +427,14 @@ export function VhsStage3D({ frameRef, hoverRef, onStatusChange }: VhsStage3DPro
     const ambient = new THREE.AmbientLight('#ffffff', 0.22);
     scene.add(fill, rim, ambient);
 
+    // En celulares se usa un buffer mas liviano (8 bits y menos suavizado): algunos GPU moviles
+    // no dibujan en buffers de coma flotante con MSAA y la escena quedaba en blanco.
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const halfFloatOk =
+      !coarsePointer && (renderer.extensions.has('EXT_color_buffer_half_float') || renderer.extensions.has('EXT_color_buffer_float'));
     const target = new THREE.WebGLRenderTarget(1, 1, {
-      type: THREE.HalfFloatType,
-      samples: 4,
+      type: halfFloatOk ? THREE.HalfFloatType : THREE.UnsignedByteType,
+      samples: coarsePointer ? 2 : 4,
     });
     const postMat = new THREE.ShaderMaterial({
       vertexShader: postVertex,
@@ -453,7 +479,7 @@ export function VhsStage3D({ frameRef, hoverRef, onStatusChange }: VhsStage3DPro
       stageW = Math.max(1, stage.clientWidth);
       stageH = Math.max(1, stage.clientHeight);
       viewportH = window.innerHeight;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
       // El pie no debe cortar los estuches: el lienzo baja hasta el borde del tubo
       const content = stage.closest('.crt-content');
       extra =
@@ -548,6 +574,8 @@ export function VhsStage3D({ frameRef, hoverRef, onStatusChange }: VhsStage3DPro
     let raf = 0;
     let last = performance.now();
     let announced = false;
+    let verified = false;
+    let visibleFrames = 0;
     let dragDim = 0;
     let lastPosition: number | null = null;
     let velocity = 0;
@@ -712,6 +740,15 @@ export function VhsStage3D({ frameRef, hoverRef, onStatusChange }: VhsStage3DPro
       if (!announced) {
         announced = true;
         setStatus('ready');
+      }
+
+      // Red de seguridad: si con estuches a la vista el lienzo sigue vacio, se vuelve al carrusel plano
+      if (!verified && rigs.some((rig) => rig.root.visible) && ++visibleFrames >= 30) {
+        verified = true;
+        if (isCanvasBlank(renderer)) {
+          console.warn('[vhs-3d] el lienzo salio vacio, se usa el carrusel plano');
+          setStatus('off');
+        }
       }
     };
     raf = window.requestAnimationFrame(loop);

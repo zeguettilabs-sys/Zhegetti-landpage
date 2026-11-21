@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AdvisorProvider } from './components/AdvisorDialog';
 import { CrtLoader } from './components/CrtLoader';
+import { useAutoLite } from './hooks/useLite';
 import { CrtTubeDefs } from './components/CrtTube';
 import { PageTransition } from './components/PageTransition';
 import { AboutPage } from './pages/AboutPage';
@@ -14,6 +15,8 @@ import { ShowcasePage } from './pages/ShowcasePage';
 export function App() {
   const [showLoader, setShowLoader] = useState<boolean>(true);
   const [bootReady, setBootReady] = useState<boolean>(false);
+
+  useAutoLite(bootReady);
 
   const handleBootComplete = useCallback(() => {
     setShowLoader(false);

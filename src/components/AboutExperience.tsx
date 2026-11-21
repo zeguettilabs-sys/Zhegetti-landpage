@@ -323,7 +323,9 @@ export function AboutExperience() {
 
       // Curvatura del tubo, la misma formula que el resto del HTML
       const k = window.innerWidth < 740 ? 0.025 : 0.04;
+      const lite = document.documentElement.classList.contains('lite');
       const bend = (b: LineBox, dx: number, y: number) => {
+        if (lite) return;
         const vx = screen.stageL + b.x + dx + b.w / 2;
         const vy = screen.stageT + y + b.h / 2;
         const nx = clamp((vx - (screen.l + screen.w / 2)) / (screen.w / 2), -1.1, 1.1);

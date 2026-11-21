@@ -570,4 +570,56 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(dialog).toHaveCount(0);
     expect(errors).toEqual([]);
   });
+
+  test('Modo ahorro: se activa a mano, se recuerda y se activa solo en equipos de gama baja', async ({ page, browser }) => {
+    const errors = trackPageErrors(page);
+    await page.setViewportSize({ width: 1440, height: 960 });
+    // Equipo potente simulado, para que no se active solo
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+      Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+    });
+    await page.goto('/');
+    await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
+
+    const toggle = page.getByTestId('lite-toggle');
+    await expect(toggle).toContainText('[OFF]');
+    await toggle.click();
+    await expect(toggle).toContainText('[ON]');
+    await expect(page.locator('html')).toHaveClass(/lite/);
+    await expect(page.locator('.carousel-stage')).toHaveAttribute('data-webgl', 'off');
+    await expect(page.locator('.carousel-stage__webgl')).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem('zeguetti-lite'))).toBe('1');
+
+    // El carrusel plano sigue funcionando
+    await page.getByRole('button', { name: 'Siguiente servicio' }).click();
+    await expect(page.locator('.carousel-caption__index')).toContainText('02 / 05 · APLICACIONES WEB');
+
+    // Sin cambio de canal en modo ahorro
+    await page.getByRole('link', { name: '[ VER SOLUCIÓN ]' }).click();
+    await expect(page).toHaveURL(/\/servicios\/aplicaciones-web$/);
+    await expect(page.locator('.crt-channel')).toHaveCount(0);
+
+    // Se recuerda al recargar
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass(/lite/);
+
+    // Equipo de gama baja sin preferencia guardada: arranca en modo ahorro
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await context.addInitScript(() => {
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 2 });
+    });
+    const low = await context.newPage();
+    await low.goto('/');
+    await expect(low.locator('html')).toHaveClass(/lite/);
+    await expect(low.getByTestId('lite-toggle')).toContainText('[ON]');
+    // ...pero si el visitante lo apaga, esa eleccion manda
+    await low.getByTestId('lite-toggle').click();
+    await expect(low.locator('html')).not.toHaveClass(/lite/);
+    await low.reload();
+    await expect(low.locator('html')).not.toHaveClass(/lite/);
+    await context.close();
+
+    expect(errors).toEqual([]);
+  });
 });

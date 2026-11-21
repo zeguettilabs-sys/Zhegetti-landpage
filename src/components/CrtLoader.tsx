@@ -6,7 +6,8 @@ interface CrtLoaderProps {
 }
 
 const TOTAL_TICKS = 96;
-const BOOT_DURATION_MS = 1350;
+const BOOT_DURATION_MS =
+  typeof document !== 'undefined' && document.documentElement.classList.contains('lite') ? 600 : 1350;
 
 export function CrtLoader({ onComplete }: CrtLoaderProps) {
   const [progress, setProgress] = useState<number>(0);
@@ -23,6 +24,14 @@ export function CrtLoader({ onComplete }: CrtLoaderProps) {
       const timer = window.setTimeout(onComplete, 120);
       return () => window.clearTimeout(timer);
     }
+
+    // Red de seguridad: si el navegador pausa los cuadros (vista previa, app dentro de app),
+    // la carga igual termina con un temporizador
+    const hardCap = window.setTimeout(() => {
+      setProgress(100);
+      setExiting(true);
+      onComplete();
+    }, BOOT_DURATION_MS + 2600);
 
     let rafId = 0;
     let finishTimer = 0;
@@ -65,6 +74,7 @@ export function CrtLoader({ onComplete }: CrtLoaderProps) {
     return () => {
       window.cancelAnimationFrame(rafId);
       window.clearTimeout(finishTimer);
+      window.clearTimeout(hardCap);
     };
   }, [onComplete]);
 

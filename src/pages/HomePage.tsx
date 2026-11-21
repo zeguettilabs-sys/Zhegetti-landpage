@@ -70,19 +70,25 @@ export function HomePage({ bootReady = true }: HomePageProps) {
       return;
     }
 
-    // Secuencia escalonada JS: 1) Encabezados, 2) Pie de pagina, 3) Tarjetas en parabola
-    const raf = window.requestAnimationFrame(() => {
-      setIntroStep(1);
-      const tFooter = window.setTimeout(() => setIntroStep(2), 230);
-      const tCards = window.setTimeout(() => {
-        setIntroStep(3);
-        hasCompletedHomeIntro = true;
-      }, 470);
-      timersRef.current.push(tFooter, tCards);
-    });
+    // Secuencia escalonada JS: 1) Encabezados, 2) Pie de pagina, 3) Tarjetas en parabola.
+    // Va con temporizadores (no con requestAnimationFrame): en navegadores de celular que pausan
+    // los cuadros, la web se quedaba a medio mostrar hasta navegar a otra pagina.
+    const finish = () => {
+      setIntroStep(3);
+      hasCompletedHomeIntro = true;
+    };
+    const tHeader = window.setTimeout(() => setIntroStep(1), 30);
+    const tFooter = window.setTimeout(() => setIntroStep(2), 260);
+    const tCards = window.setTimeout(finish, 500);
+    // Si la pestaña estaba oculta, al volver se completa de inmediato
+    const onVisible = () => {
+      if (!document.hidden) finish();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    timersRef.current.push(tHeader, tFooter, tCards);
 
     return () => {
-      window.cancelAnimationFrame(raf);
+      document.removeEventListener('visibilitychange', onVisible);
       timersRef.current.forEach((id) => window.clearTimeout(id));
       timersRef.current = [];
     };

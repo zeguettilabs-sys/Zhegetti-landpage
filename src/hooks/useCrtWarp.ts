@@ -66,9 +66,11 @@ export function useCrtWarp(screenRef: RefObject<HTMLElement | null>) {
       const cy = top + h / 2;
       const k = vw < 740 ? 0.025 : 0.04;
 
-      const nodes = Array.from(screen.querySelectorAll<HTMLElement>(WARP_SELECTOR)).filter(
-        (el) => !el.closest(SKIP_INSIDE)
-      );
+      // Modo ahorro: el texto no se curva (se limpian los desplazamientos de abajo)
+      const lite = document.documentElement.classList.contains('lite');
+      const nodes = lite
+        ? []
+        : Array.from(screen.querySelectorAll<HTMLElement>(WARP_SELECTOR)).filter((el) => !el.closest(SKIP_INSIDE));
       const keep = new Set<HTMLElement>();
 
       // Primero se leen todas las posiciones y luego se escribe, para no forzar
@@ -127,6 +129,7 @@ export function useCrtWarp(screenRef: RefObject<HTMLElement | null>) {
     document.fonts?.ready.then(schedule).catch(() => {});
 
     window.addEventListener('resize', schedule);
+    window.addEventListener('zeguetti:lite', schedule);
     screen.addEventListener('scroll', schedule, { capture: true, passive: true });
     window.addEventListener('scroll', schedule, { passive: true });
     const mutations = new MutationObserver(schedule);
@@ -136,6 +139,7 @@ export function useCrtWarp(screenRef: RefObject<HTMLElement | null>) {
       window.cancelAnimationFrame(frame);
       timers.forEach((t) => window.clearTimeout(t));
       window.removeEventListener('resize', schedule);
+      window.removeEventListener('zeguetti:lite', schedule);
       screen.removeEventListener('scroll', schedule, { capture: true });
       window.removeEventListener('scroll', schedule);
       mutations.disconnect();

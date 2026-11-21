@@ -44,7 +44,8 @@ export function PageTransition() {
     const prefersReduced =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
+    // Modo ahorro: sin cambio de canal (es la animacion mas pesada de la web)
+    if (prefersReduced || document.documentElement.classList.contains('lite')) return;
 
     const root = document.documentElement;
     root.classList.add('channel-on');

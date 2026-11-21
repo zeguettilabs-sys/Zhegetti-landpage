@@ -7,6 +7,7 @@ import { ShowcaseLightbox } from '../components/ShowcaseLightbox';
 import { VcrFooter } from '../components/VcrStatus';
 import { brandName } from '../data/services';
 import { buildShowcaseCards, tickerHeadlines, type ShowcaseCard } from '../three/showcaseCards';
+import { useLiteMode } from '../hooks/useLite';
 import { useSeo } from '../seo/useSeo';
 
 interface RouteState {
@@ -26,6 +27,11 @@ export function ShowcasePage() {
   const [cards, setCards] = useState<ShowcaseCard[]>([]);
   const [status, setStatus] = useState<GlobeStatus>('loading');
   const [open, setOpen] = useState<{ index: number; from: DOMRect | null } | null>(null);
+  const [lite] = useLiteMode();
+  // Modo ahorro: tarjetas en rejilla plana. Al salir del modo, el globo vuelve a intentarse.
+  useEffect(() => {
+    setStatus(lite ? 'off' : 'loading');
+  }, [lite]);
 
   // Mientras la vitrina sea ilustrativa, no se indexa
   useSeo({

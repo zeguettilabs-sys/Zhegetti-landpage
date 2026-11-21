@@ -7,6 +7,7 @@ import {
   wrapIndex,
   type ServiceItem,
 } from '../data/services';
+import { useLiteMode } from '../hooks/useLite';
 import { SwapText } from './SwapText';
 import { VhsCover } from './VhsCover';
 import {
@@ -170,6 +171,11 @@ export function ServiceCarousel({
   const [ctaPhase, setCtaPhase] = useState<'a' | 'b' | null>(null);
   const captionMountedRef = useRef(false);
   const [webglStatus, setWebglStatus] = useState<Stage3DStatus>('loading');
+  const [lite] = useLiteMode();
+  // Modo ahorro: carrusel plano (sin WebGL). Al salir del modo, el 3D vuelve a intentarse.
+  useEffect(() => {
+    setWebglStatus(lite ? 'off' : 'loading');
+  }, [lite]);
   const frame3DRef = useRef<Stage3DFrame | null>(null);
   const hover3DRef = useRef<Stage3DHover>({ slotId: null, tiltX: 0, tiltY: 0 });
 

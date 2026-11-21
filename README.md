@@ -32,6 +32,14 @@ npm run test:e2e   # pruebas E2E (Playwright)
 | `/contacto` | Panel de asesores: WhatsApp, llamada y correo. |
 | `*` | Pantalla "sin señal" (404). |
 
+## Modo ahorro (equipos de poca potencia)
+
+El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se apaga el 3D (WebGL), la curvatura del texto, el grano y el temblor de cinta, el cambio de canal y las animaciones; el carrusel pasa a ser plano. La CPU del navegador baja de ~4 % a ~0 % y se usa menos memoria.
+
+- Lo que elige el visitante se guarda (`zeguetti-lite`) y manda siempre.
+- Sin elección, se activa solo en equipos de gama baja (≤ 2 GB de RAM, ≤ 2 núcleos, celular con ≤ 4 núcleos y ≤ 4 GB, "ahorro de datos" o red 2G) o si la web va a menos de ~30 cuadros por segundo.
+- La lógica está en `src/hooks/useLite.ts`; el `index.html` aplica la clase `lite` antes de pintar.
+
 ## Dónde se editan los datos
 
 - **Servicios y textos:** `data/servicios.json` (para sumar un servicio, añade un objeto; el campo opcional `example` muestra un proyecto publicado en su ficha).

@@ -4705,3 +4705,65 @@ button.vcr-footer__link {
     font-size: 21px;
   }
 }
+
+/* =========================================================
+   Celulares y pantallas tactiles: sin los efectos mas pesados
+   (el filtro SVG del texto y el grano animado tardan en pintar o fallan en varios moviles)
+   ========================================================= */
+@media (max-width: 767px), (pointer: coarse) {
+  .crt-content h1,
+  .crt-content h2,
+  .crt-content p {
+    filter: none;
+  }
+
+  .crt-signal__grain {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+.vcr-footer__pair {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 24px);
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Modo ahorro (html.lite): para equipos de poca potencia
+   Sin WebGL, sin curvatura del texto, grano, temblor de cinta ni animaciones.
+   ========================================================= */
+html.lite .crt-signal,
+html.lite .crt-glass__window,
+html.lite .crt-rim__glow,
+html.lite .crt-screen__glare {
+  display: none;
+}
+
+html.lite .crt-content h1,
+html.lite .crt-content h2,
+html.lite .crt-content p {
+  filter: none;
+}
+
+html.lite .crt-content {
+  text-shadow: none;
+}
+
+html.lite .header-brand__logo,
+html.lite .header-brand__logo-wrap {
+  filter: none;
+}
+
+html.lite *:not(.nw-ticker-track),
+html.lite *::before,
+html.lite *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+  will-change: auto !important;
+}

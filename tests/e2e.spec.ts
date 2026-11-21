@@ -25,6 +25,8 @@ test.describe('Zeguetti Web — Verificación completa', () => {
   });
 
   test('Inicio, carrusel 3D, clic lateral, arrastre, teclado e historial (1440x960)', async ({ page }) => {
+    // Recorre muchas paginas y la entrada del inicio se repite en cada regreso
+    test.setTimeout(60_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto('/');
@@ -296,8 +298,8 @@ test.describe('Zeguetti Web — Verificación completa', () => {
       },
       {
         path: '/servicios/landing-pages',
-        title: 'Tu negocio,',
-        mockupText: 'Tu servicio, explicado',
+        title: 'Posiciona y muestra',
+        mockupText: '',
       },
     ];
 
@@ -371,12 +373,14 @@ test.describe('Zeguetti Web — Verificación completa', () => {
       const current = expectedOrder[i];
       await expect(page).toHaveURL(new RegExp(`${current.path}$`));
       await expect(page.locator('h1')).toContainText(current.title);
-      await expect(page.locator('.mockup-surface')).toContainText(
-        current.mockupText
-      );
-      await expect(page.locator('.mockup-caption')).toContainText(
-        'VISTA ILUSTRATIVA'
-      );
+      if (current.mockupText) {
+        await expect(page.locator('.mockup-surface')).toContainText(current.mockupText);
+        await expect(page.locator('.mockup-caption')).toContainText('VISTA ILUSTRATIVA');
+      } else {
+        // Ficha con caso real: monitor con la web del cliente
+        await expect(page.locator('.monitor-stage img')).toBeVisible();
+        await expect(page.locator('.monitor-caption')).toContainText('CASO REAL');
+      }
       await expect(page.locator('.capability-card')).toHaveCount(3);
       await expect(page.locator('.process-grid article')).toHaveCount(4);
 
@@ -391,7 +395,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await page.goBack();
     await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
     // La ficha de landing pages muestra el ejemplo publicado
-    await expect(page.locator('a.detail-example')).toHaveAttribute('href', 'https://www.dalenabogada.com/');
+    await expect(page.locator('a.monitor-caption')).toHaveAttribute('href', 'https://www.dalenabogada.com/');
 
     // Ruta inválida muestra recuperación útil
     await page.goto('/servicios/servicio-inexistente');

@@ -98,6 +98,34 @@ function CaseShot({ shot, onOpen }: { shot: CaseImage; onOpen: (shot: CaseImage)
   );
 }
 
+/**
+ * Monitor de escritorio con la web del cliente en pantalla (como la foto de proyecto
+ * de la referencia): fondo gris de estudio, pantalla, pie y mesa. Al pulsarlo se amplia.
+ */
+export function MonitorShot({ shot, client, url, domain }: { shot: CaseImage; client: string; url: string; domain: string }) {
+  const [zoom, setZoom] = useState(false);
+  return (
+    <div className="detail-hero__visual monitor-visual">
+      <figure className="monitor-stage">
+        <button type="button" className="monitor" onClick={() => setZoom(true)} aria-label={`Ampliar: ${shot.alt}`}>
+          <span className="monitor__screen">
+            <img src={shot.image} alt={shot.alt} width={shot.width} height={shot.height} decoding="async" draggable={false} />
+            <span className="monitor__glare" aria-hidden="true" />
+          </span>
+        </button>
+        <span className="monitor__neck" aria-hidden="true" />
+        <span className="monitor__foot" aria-hidden="true" />
+        <span className="monitor__desk" aria-hidden="true" />
+      </figure>
+      <a className="mockup-caption monitor-caption" href={url} target="_blank" rel="noopener noreferrer">
+        CASO REAL / {client.toUpperCase()} · {domain} [↗]
+        <span className="sr-only"> (se abre en otra pestaña)</span>
+      </a>
+      {zoom && <CaseZoom shot={shot} onClose={() => setZoom(false)} />}
+    </div>
+  );
+}
+
 /** Captura ampliada a pantalla del televisor. */
 function CaseZoom({ shot, onClose }: { shot: CaseImage; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement | null>(null);

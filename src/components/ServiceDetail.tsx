@@ -7,7 +7,7 @@ import {
   getServiceById,
   type ServiceItem,
 } from '../data/services';
-import { CaseStudy } from './CaseStudy';
+import { CaseStudy, MonitorShot } from './CaseStudy';
 import { ContactActions } from './ContactSection';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
 import { ServiceMockup } from './ServiceMockup';
@@ -391,20 +391,6 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                 {service.descriptionDisplayLines.join(' ')}
               </p>
 
-              {service.example && (
-                <a
-                  className="detail-example"
-                  href={service.example.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Ver ejemplo publicado: ${service.example.label}, ${service.example.domain} (se abre en otra pestaña)`}
-                >
-                  <span className="detail-example__tag">[ EJEMPLO PUBLICADO ]</span>
-                  <span className="detail-example__name">{service.example.label}</span>
-                  <span className="detail-example__desc">{service.example.description}</span>
-                  <span className="detail-example__url">{service.example.domain} [↗]</span>
-                </a>
-              )}
 
               <Link
                 to="/"
@@ -415,7 +401,16 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
               </Link>
             </div>
 
-            <ServiceMockup service={service} />
+            {service.caseStudy?.hero ? (
+              <MonitorShot
+                shot={service.caseStudy.hero}
+                client={service.caseStudy.client}
+                url={service.caseStudy.url}
+                domain={service.caseStudy.domain}
+              />
+            ) : (
+              <ServiceMockup service={service} />
+            )}
           </div>
         </section>
 

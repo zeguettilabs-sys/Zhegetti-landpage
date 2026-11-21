@@ -172,16 +172,16 @@
       "name": "Landing pages",
       "path": "/servicios/landing-pages",
       "category": "PRESENCIA DIGITAL",
-      "title": "Tu negocio, listo para vender en internet.",
+      "title": "Landing page para posicionar y mostrar tu negocio.",
       "titleLines": [
-        "Tu negocio,",
-        "listo para vender."
+        "Posiciona y muestra",
+        "tu negocio."
       ],
-      "description": "Diseñamos landing pages rápidas y claras que presentan tu servicio, generan confianza y convierten visitas en consultas por WhatsApp o formulario.",
+      "description": "Creamos tu landing page para posicionar tu marca en Google y mostrar tu negocio con claridad: rápida, confiable y lista para recibir consultas por WhatsApp.",
       "descriptionDisplayLines": [
-        "DISEÑAMOS LANDING PAGES RÁPIDAS Y CLARAS QUE",
-        "PRESENTAN TU SERVICIO, GENERAN CONFIANZA Y",
-        "CONVIERTEN VISITAS EN CONSULTAS REALES."
+        "UNA LANDING PAGE PARA POSICIONAR TU MARCA EN",
+        "GOOGLE Y MOSTRAR TU NEGOCIO: RÁPIDA, CONFIABLE",
+        "Y LISTA PARA RECIBIR CONSULTAS POR WHATSAPP."
       ],
       "caption": "Una página que presenta tu negocio y convierte visitas en clientes.",
       "tags": [
@@ -232,13 +232,6 @@
         "url": "https://www.dalenabogada.com/",
         "domain": "dalenabogada.com",
         "blocks": [
-          {
-            "type": "shot",
-            "image": "/assets/clientes/dalena/inicio.jpg",
-            "alt": "Portada de dalenabogada.com: «Defensa legal que protege tus intereses»",
-            "width": 1440,
-            "height": 900
-          },
           {
             "type": "copy",
             "label": "El encargo",
@@ -317,7 +310,13 @@
             "body": "Una landing rápida, con descripción y vista previa para buscadores y redes, que convierte visitas en conversaciones por WhatsApp.",
             "low": true
           }
-        ]
+        ],
+        "hero": {
+          "image": "/assets/clientes/dalena/inicio.jpg",
+          "alt": "Landing page de DLA Estudio Jurídico (dalenabogada.com) en un monitor",
+          "width": 1440,
+          "height": 900
+        }
       }
     }
   ],

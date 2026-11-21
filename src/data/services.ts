@@ -28,6 +28,8 @@ export interface CaseStudy {
   summary: string;
   url: string;
   domain: string;
+  /** Captura que va en el monitor de la portada de la ficha. */
+  hero?: CaseImage;
   blocks: CaseBlock[];
 }
 

@@ -207,10 +207,117 @@
       "mockupLabel": "Vista ilustrativa",
       "nextService": "sistemas-a-medida",
       "example": {
-        "label": "Dalena Arévalo — Abogada",
+        "label": "DLA Estudio Jurídico — Dalena Arévalo",
         "url": "https://www.dalenabogada.com/",
         "domain": "dalenabogada.com",
         "description": "Landing page para una abogada especialista en Contratación Pública y Arbitraje en Lima: servicios, experiencia y consulta directa por WhatsApp."
+      },
+      "caseStudy": {
+        "client": "DLA Estudio Jurídico",
+        "person": "Dalena Arévalo",
+        "year": "2026",
+        "sector": [
+          "Legal",
+          "Contratación Pública",
+          "Arbitraje"
+        ],
+        "services": [
+          "Diseño web",
+          "Desarrollo",
+          "SEO",
+          "WhatsApp"
+        ],
+        "headline": "Una web a la altura de su trayectoria, hecha para recibir consultas.",
+        "summary": "Dalena Arévalo defiende a empresas y consorcios en arbitrajes y contrataciones con el Estado. Necesitaba una web tan seria como su trabajo, que explique su especialidad y lleve a agendar una consulta. La diseñamos y desarrollamos como una landing clara, rápida y preparada para Google.",
+        "url": "https://www.dalenabogada.com/",
+        "domain": "dalenabogada.com",
+        "blocks": [
+          {
+            "type": "shot",
+            "image": "/assets/clientes/dalena/inicio.jpg",
+            "alt": "Portada de dalenabogada.com: «Defensa legal que protege tus intereses»",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "type": "copy",
+            "label": "El encargo",
+            "lead": "Seriedad legal, sin perder cercanía.",
+            "body": "Explicar una especialidad técnica —Contratación Pública y Arbitraje— a empresas que enfrentan una controversia con el Estado, y que puedan pedir una consulta sin vueltas."
+          },
+          {
+            "type": "copy",
+            "label": "01 · Primera impresión",
+            "lead": "Una portada que transmite confianza.",
+            "body": "Tipografía clásica, la estatua de la justicia y el mensaje principal en una sola mirada, con la consulta gratuita siempre a la vista.",
+            "low": true
+          },
+          {
+            "type": "shot",
+            "image": "/assets/clientes/dalena/servicios.jpg",
+            "alt": "Sección de servicios: seis áreas de práctica en tarjetas",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "type": "copy",
+            "label": "02 · Servicios",
+            "lead": "Seis áreas, explicadas sin jerga.",
+            "body": "Contratación pública, arbitraje, obras públicas, conciliaciones, anulación y ejecución de laudos: cada área en su tarjeta, con lo que hace por el cliente."
+          },
+          {
+            "type": "pair",
+            "images": [
+              {
+                "image": "/assets/clientes/dalena/experiencia.jpg",
+                "alt": "Perfil: «Una abogada con trayectoria comprobada»",
+                "width": 1440,
+                "height": 900
+              },
+              {
+                "image": "/assets/clientes/dalena/beneficios.jpg",
+                "alt": "Beneficios de trabajar con ella y botón para agendar",
+                "width": 1440,
+                "height": 900
+              }
+            ]
+          },
+          {
+            "type": "copy",
+            "label": "03 · Perfil y beneficios",
+            "lead": "La trayectoria, en primer plano.",
+            "body": "Su experiencia, su colegiatura y lo que gana el cliente al trabajar con ella aparecen antes de pedir el contacto.",
+            "low": true
+          },
+          {
+            "type": "shot",
+            "image": "/assets/clientes/dalena/movil.jpg",
+            "alt": "La web en un celular",
+            "width": 390,
+            "height": 844,
+            "phone": true
+          },
+          {
+            "type": "copy",
+            "label": "04 · En el celular",
+            "lead": "Cómoda en el teléfono.",
+            "body": "Se lee bien en una pantalla chica y la consulta por WhatsApp, la llamada y el correo quedan siempre a un toque."
+          },
+          {
+            "type": "shot",
+            "image": "/assets/clientes/dalena/contacto.jpg",
+            "alt": "Sección de contacto con WhatsApp, teléfono y correo",
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "type": "copy",
+            "label": "Resultado",
+            "lead": "Una presencia digital lista para crecer.",
+            "body": "Una landing rápida, con descripción y vista previa para buscadores y redes, que convierte visitas en conversaciones por WhatsApp.",
+            "low": true
+          }
+        ]
       }
     }
   ],
@@ -252,5 +359,15 @@
   "notes": [
     "El texto de capacidades y fichas proviene del diseño; los captions 02 a 04 se proponen para la implementación.",
     "Las cifras y pantallas son ilustrativas. Los canales de contacto requieren configuración del dueño."
+  ],
+  "clients": [
+    {
+      "id": "dla-estudio-juridico",
+      "name": "DLA Estudio Jurídico",
+      "person": "Dalena Arévalo — Abogada",
+      "logo": "/assets/clientes/dalena/logo-dla.png",
+      "url": "https://www.dalenabogada.com/",
+      "service": "landing-pages"
+    }
   ]
 }

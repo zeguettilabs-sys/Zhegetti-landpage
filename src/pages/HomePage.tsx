@@ -15,7 +15,14 @@ interface HomePageProps {
   bootReady?: boolean;
 }
 
-let hasCompletedHomeIntro = false;
+/** Sin animaciones de entrada: movimiento reducido o modo ahorro. */
+function skipsIntro(): boolean {
+  if (typeof window === 'undefined') return true;
+  return (
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    document.documentElement.classList.contains('lite')
+  );
+}
 
 function resolveInitialServiceId(state: HomeRouteState | null): string {
   if (state?.activeServiceId && services.some((s) => s.id === state.activeServiceId)) {
@@ -40,10 +47,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
     resolveInitialServiceId(routeState)
   );
   const [activeServiceId, setActiveServiceId] = useState<string>(seedServiceId);
-  const [introStep, setIntroStep] = useState<0 | 1 | 2 | 3>(() => {
-    if (!bootReady) return 0;
-    return hasCompletedHomeIntro ? 3 : 0;
-  });
+  const [introStep, setIntroStep] = useState<0 | 1 | 2 | 3>(() => (bootReady && skipsIntro() ? 3 : 0));
 
   const timersRef = useRef<number[]>([]);
 
@@ -54,45 +58,55 @@ export function HomePage({ bootReady = true }: HomePageProps) {
     path: '/',
   });
 
+  // La entrada (encabezado, pie y estuches subiendo) se repite cada vez que se llega al inicio:
+  // al volver desde otra pagina y tambien al pulsar el logo o INICIO estando ya aqui.
   useEffect(() => {
     if (!bootReady) {
       setIntroStep(0);
       return;
     }
 
-    const prefersReduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReduced || hasCompletedHomeIntro) {
-      hasCompletedHomeIntro = true;
+    if (skipsIntro()) {
       setIntroStep(3);
       return;
     }
 
+    // Con cambio de canal encima, la entrada arranca cuando el canal empieza a irse
+    const channelOn = document.documentElement.classList.contains('channel-on');
+    const delay = channelOn ? 440 : 30;
+
     // Secuencia escalonada JS: 1) Encabezados, 2) Pie de pagina, 3) Tarjetas en parabola.
     // Va con temporizadores (no con requestAnimationFrame): en navegadores de celular que pausan
-    // los cuadros, la web se quedaba a medio mostrar hasta navegar a otra pagina.
-    const finish = () => {
-      setIntroStep(3);
-      hasCompletedHomeIntro = true;
-    };
-    const tHeader = window.setTimeout(() => setIntroStep(1), 30);
-    const tFooter = window.setTimeout(() => setIntroStep(2), 260);
-    const tCards = window.setTimeout(finish, 500);
+    // los cuadros, la web se quedaba a medio mostrar.
+    setIntroStep(0);
+    const finish = () => setIntroStep(3);
+    // Cada paso se programa desde el anterior: si el navegador se traba un momento, los pasos
+    // no se juntan en uno solo y la entrada se sigue viendo escalonada.
+    const timers: number[] = [];
+    timers.push(
+      window.setTimeout(() => {
+        setIntroStep(1);
+        timers.push(
+          window.setTimeout(() => {
+            setIntroStep(2);
+            timers.push(window.setTimeout(finish, 240));
+          }, 230)
+        );
+      }, delay)
+    );
     // Si la pestaña estaba oculta, al volver se completa de inmediato
     const onVisible = () => {
       if (!document.hidden) finish();
     };
     document.addEventListener('visibilitychange', onVisible);
-    timersRef.current.push(tHeader, tFooter, tCards);
+    timersRef.current = timers;
 
     return () => {
       document.removeEventListener('visibilitychange', onVisible);
-      timersRef.current.forEach((id) => window.clearTimeout(id));
+      timers.forEach((id) => window.clearTimeout(id));
       timersRef.current = [];
     };
-  }, [bootReady]);
+  }, [bootReady, location.key]);
 
   useEffect(() => {
     if (routeState?.activeServiceId && services.some((s) => s.id === routeState.activeServiceId)) {

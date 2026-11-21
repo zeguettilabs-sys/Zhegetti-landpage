@@ -3,6 +3,44 @@ import serviciosJson from '../../data/servicios.json';
 
 export type ServiceMockupType = 'dashboard' | 'portal' | 'workflow' | 'integrations' | 'landing';
 
+/** Bloques del caso de estudio (como la pagina de proyecto de la referencia). */
+export interface CaseImage {
+  image: string;
+  alt: string;
+  width: number;
+  height: number;
+  /** Captura de celular (vertical). */
+  phone?: boolean;
+}
+
+export type CaseBlock =
+  | ({ type: 'shot' } & CaseImage)
+  | { type: 'pair'; images: CaseImage[] }
+  | { type: 'copy'; label: string; lead: string; body: string; low?: boolean };
+
+export interface CaseStudy {
+  client: string;
+  person: string;
+  year: string;
+  sector: string[];
+  services: string[];
+  headline: string;
+  summary: string;
+  url: string;
+  domain: string;
+  blocks: CaseBlock[];
+}
+
+/** Clientes cuyo logo se muestra en el cuadro de clientes. */
+export interface ClientLogo {
+  id: string;
+  name: string;
+  person: string;
+  logo: string;
+  url: string;
+  service: string;
+}
+
 /** Proyecto publicado que sirve de ejemplo del servicio. */
 export interface ServiceExample {
   label: string;
@@ -33,6 +71,7 @@ export interface ServiceItem {
   mockupLabel: string;
   nextService: string;
   example?: ServiceExample;
+  caseStudy?: CaseStudy;
 }
 
 export interface ProcessStep {
@@ -101,6 +140,7 @@ export const brandName = payload.brand;
 export const brandTagline = payload.tagline;
 export const services: ServiceItem[] = payload.services;
 export const commonCopy: CommonCopy = payload.common;
+export const clients: ClientLogo[] = (payload as { clients?: ClientLogo[] }).clients ?? [];
 export const rawSiteConfig: SiteConfigData = payload.siteConfig;
 export const designConfig: DesignConfig = disenoJson as DesignConfig;
 

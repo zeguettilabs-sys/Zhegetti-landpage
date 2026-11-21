@@ -7,6 +7,7 @@ import {
   getServiceById,
   type ServiceItem,
 } from '../data/services';
+import { CaseStudy } from './CaseStudy';
 import { ContactActions } from './ContactSection';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
 import { ServiceMockup } from './ServiceMockup';
@@ -45,12 +46,17 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
       const ratio = Math.min(1, Math.max(0, el.scrollLeft / maxScroll));
       setProgress(ratio);
 
-      // Mapear rango de la galeria (~16% a ~68% del scroll) al slide 0..2
-      const galleryStart = 0.16;
-      const galleryEnd = 0.66;
+      // Mapear el tramo en que la galeria esta en pantalla al slide 0..2.
+      // Se calcula con la posicion real del panel: si hay paneles antes (caso de estudio),
+      // la sincronizacion sigue siendo correcta.
+      const panel = galleryPanelRef.current;
+      const galleryStart = panel ? (panel.offsetLeft - el.clientWidth * 0.35) / maxScroll : 0.16;
+      const galleryEnd = panel
+        ? (panel.offsetLeft + panel.offsetWidth - el.clientWidth * 0.65) / maxScroll
+        : 0.66;
       const normalizedGallery = Math.min(
         1,
-        Math.max(0, (ratio - galleryStart) / (galleryEnd - galleryStart))
+        Math.max(0, (ratio - galleryStart) / Math.max(0.0001, galleryEnd - galleryStart))
       );
       const slideFloat = normalizedGallery * 2;
       setContinuousSlide(slideFloat);
@@ -412,6 +418,9 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
             <ServiceMockup service={service} />
           </div>
         </section>
+
+        {/* Caso de estudio (solo servicios con un cliente publicado) */}
+        {service.caseStudy && <CaseStudy data={service.caseStudy} serviceId={service.id} />}
 
         {/* Panel 2: Galeria curva cilindrica WebGL (ref. 00:62) */}
         <section

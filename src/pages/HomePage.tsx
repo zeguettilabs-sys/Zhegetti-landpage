@@ -54,7 +54,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
   useSeo({
     title: `${brandName} | Sistemas a medida, apps web y landing pages en Perú`,
     description:
-      'Zeguetti desarrolla sistemas a medida, aplicaciones web, automatización, integraciones y landing pages para empresas en Perú. Cotiza con un asesor por WhatsApp.',
+      'Zeguetti desarrolla sistemas a medida, aplicaciones web, automatización e integraciones en Perú. Landing page desde S/ 100 con dominio y mantenimiento por 1 año. Cotiza por WhatsApp.',
     path: '/',
   });
 

@@ -317,6 +317,23 @@
           "width": 1440,
           "height": 900
         }
+      },
+      "promo": {
+        "price": 100,
+        "currency": "PEN",
+        "priceLabel": "S/ 100",
+        "from": true,
+        "validUntil": "2026-11-30",
+        "validUntilLabel": "Válida hasta el 30 de noviembre de 2026",
+        "tag": "PROMO DESDE S/ 100",
+        "headline": "Tu landing page desde S/ 100",
+        "includes": [
+          "Diseño y desarrollo de tu landing page",
+          "Dominio por 1 año",
+          "Mantenimiento durante todo el año"
+        ],
+        "cta": "QUIERO MI LANDING DESDE S/ 100",
+        "message": "Me interesa la promoción de landing page desde S/ 100 con dominio y mantenimiento por 1 año."
       }
     }
   ],

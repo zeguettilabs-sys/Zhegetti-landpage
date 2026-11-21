@@ -10,6 +10,7 @@ interface ServiceData {
   category: string;
   description: string;
   caption: string;
+  promo?: { price: number; currency: string; includes: string[]; validUntil?: string };
 }
 
 interface SiteData {
@@ -65,6 +66,14 @@ function seoPlugin(siteUrl: string): Plugin {
           name: 'Servicios de desarrollo de software',
           itemListElement: data.services.map((s) => ({
             '@type': 'Offer',
+            ...(s.promo
+              ? {
+                  price: String(s.promo.price),
+                  priceCurrency: s.promo.currency,
+                  ...(s.promo.validUntil ? { priceValidUntil: s.promo.validUntil } : {}),
+                  description: s.promo.includes.join(' · '),
+                }
+              : {}),
             itemOffered: {
               '@type': 'Service',
               name: s.name,

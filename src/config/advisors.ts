@@ -23,14 +23,17 @@ export interface QuoteDraft {
   serviceName?: string;
   name?: string;
   note?: string;
+  /** Texto extra (por ejemplo, la promocion del servicio). */
+  extra?: string;
 }
 
 /** Mensaje que llega ya escrito a WhatsApp. */
-export function buildAdvisorMessage({ serviceName, name, note }: QuoteDraft): string {
+export function buildAdvisorMessage({ serviceName, name, note, extra }: QuoteDraft): string {
   const intro = serviceName
     ? `Hola, quiero cotizar "${serviceName}" con Zeguetti.`
     : 'Hola, quiero una asesoría de Zeguetti para cotizar un proyecto.';
   const parts = [intro];
+  if (extra?.trim()) parts.push(extra.trim());
   if (name?.trim()) parts.push(`Mi nombre es ${name.trim()}.`);
   if (note?.trim()) parts.push(note.trim());
   return parts.join(' ');

@@ -2,19 +2,24 @@ import { useParams } from 'react-router-dom';
 import { CrtShell } from '../components/CrtShell';
 import { Header } from '../components/Header';
 import { ServiceDetail } from '../components/ServiceDetail';
-import { brandName, getServiceById } from '../data/services';
+import { activePromo, brandName, getServiceById } from '../data/services';
 import { NotFoundPage } from './NotFoundPage';
 import { SITE_URL, useSeo } from '../seo/useSeo';
 
 export function ServicePage() {
   const { serviceId } = useParams<{ serviceId: string }>();
   const service = getServiceById(serviceId);
+  const promo = service ? activePromo(service) : undefined;
 
   useSeo(
     service
       ? {
-          title: `${service.name} en Perú — ${brandName}`,
-          description: service.description,
+          title: promo
+            ? `Landing page desde ${promo.priceLabel} con dominio y mantenimiento — ${brandName}`
+            : `${service.name} en Perú — ${brandName}`,
+          description: promo
+            ? `${promo.headline}: ${promo.includes.join(', ').toLowerCase()}. ${service.description}`
+            : service.description,
           path: service.path,
           jsonLd: {
             '@context': 'https://schema.org',
@@ -27,6 +32,19 @@ export function ServicePage() {
                 url: `${SITE_URL}${service.path}`,
                 areaServed: { '@type': 'Country', name: 'Perú' },
                 provider: { '@type': 'Organization', name: brandName, url: `${SITE_URL}/` },
+                ...(promo
+                  ? {
+                      offers: {
+                        '@type': 'Offer',
+                        price: String(promo.price),
+                        priceCurrency: promo.currency,
+                        ...(promo.validUntil ? { priceValidUntil: promo.validUntil } : {}),
+                        description: promo.includes.join(' · '),
+                        url: `${SITE_URL}${service.path}`,
+                        availability: 'https://schema.org/InStock',
+                      },
+                    }
+                  : {}),
               },
               {
                 '@type': 'BreadcrumbList',

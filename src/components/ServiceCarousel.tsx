@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  activePromo,
   designConfig,
   formatOrderFraction,
   services,
@@ -494,6 +495,7 @@ export function ServiceCarousel({
 
   const centerSlot = Math.round(animatedPos);
 
+  const activeServicePromo = activePromo(activeService);
   const captionIndex = `${formatOrderFraction(activeService.order)} · ${activeService.name.toUpperCase()}`;
 
   const slots3D: Stage3DSlot[] = SLOTS_RANGE.map((offset) => {
@@ -649,9 +651,9 @@ export function ServiceCarousel({
           <Link
             to={activeService.path}
             state={{ activeServiceId: activeService.id }}
-            className={`carousel-caption__cta${ctaPhase ? ` cta-swap-${ctaPhase}` : ''}`}
+            className={`carousel-caption__cta${ctaPhase ? ` cta-swap-${ctaPhase}` : ''}${activeServicePromo ? ' is-promo' : ''}`}
           >
-            [ VER SOLUCIÓN ]
+            {activeServicePromo ? `[ ${activeServicePromo.tag} → ]` : '[ VER SOLUCIÓN ]'}
           </Link>
         </div>
 

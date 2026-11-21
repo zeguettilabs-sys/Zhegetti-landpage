@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../config/site';
 import {
+  activePromo,
   commonCopy,
   formatOrderFraction,
   getServiceById,
   type ServiceItem,
 } from '../data/services';
+import { useAdvisors } from './AdvisorDialog';
 import { CaseStudy, MonitorShot } from './CaseStudy';
 import { ContactActions } from './ContactSection';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
@@ -37,6 +39,8 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
   const [zoomSlideIndex, setZoomSlideIndex] = useState<number | null>(null);
 
   const nextService = getServiceById(service.nextService);
+  const { open: openAdvisors } = useAdvisors();
+  const promo = activePromo(service);
 
   const updateProgress = useCallback(() => {
     const isDesktopTv = window.innerWidth >= 768 && window.innerHeight >= 680;
@@ -390,6 +394,29 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
               <p className="detail-description">
                 {service.descriptionDisplayLines.join(' ')}
               </p>
+
+              {promo && (
+                <div className="promo-box">
+                  <div className="promo-box__head">
+                    <span className="promo-box__tag">[ PROMOCIÓN DEL MES ]</span>
+                    {promo.from && <span className="promo-box__from">DESDE</span>}
+                    <span className="promo-box__price">{promo.priceLabel}</span>
+                  </div>
+                  <ul className="promo-box__list">
+                    {promo.includes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    className="crt-btn crt-btn--primary promo-box__cta"
+                    onClick={() => openAdvisors(service.id)}
+                  >
+                    [ {promo.cta} ]
+                  </button>
+                  {promo.validUntilLabel && <p className="promo-box__until">{promo.validUntilLabel}.</p>}
+                </div>
+              )}
 
 
               <Link

@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { advisors, buildAdvisorMessage, mailtoHref, telHref, whatsappHref } from '../config/advisors';
 import { siteConfig } from '../config/site';
-import { services } from '../data/services';
+import { activePromo, services } from '../data/services';
 
 interface AdvisorPanelProps {
   /** Servicio que llega preseleccionado (por ejemplo, desde su ficha). */
@@ -42,8 +42,8 @@ export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false }: Ad
 
   const service = services.find((item) => item.id === selected);
   const message = useMemo(
-    () => buildAdvisorMessage({ serviceName: service?.name, name, note }),
-    [service?.name, name, note]
+    () => buildAdvisorMessage({ serviceName: service?.name, name, note, extra: service ? activePromo(service)?.message : undefined }),
+    [service, name, note]
   );
 
   const copy = async (id: string, text: string) => {

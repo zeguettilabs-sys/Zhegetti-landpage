@@ -33,6 +33,23 @@ export interface CaseStudy {
   blocks: CaseBlock[];
 }
 
+/** Promocion vigente de un servicio (precio, que incluye y mensaje para el asesor). */
+export interface ServicePromo {
+  price: number;
+  currency: string;
+  priceLabel: string;
+  /** Precio "desde" (puede costar mas segun el proyecto). */
+  from?: boolean;
+  /** Fecha fin (AAAA-MM-DD): despues de ese dia la promo deja de mostrarse sola. */
+  validUntil?: string;
+  validUntilLabel?: string;
+  tag: string;
+  headline: string;
+  includes: string[];
+  cta: string;
+  message: string;
+}
+
 /** Clientes cuyo logo se muestra en el cuadro de clientes. */
 export interface ClientLogo {
   id: string;
@@ -74,6 +91,7 @@ export interface ServiceItem {
   nextService: string;
   example?: ServiceExample;
   caseStudy?: CaseStudy;
+  promo?: ServicePromo;
 }
 
 export interface ProcessStep {
@@ -142,6 +160,15 @@ export const brandName = payload.brand;
 export const brandTagline = payload.tagline;
 export const services: ServiceItem[] = payload.services;
 export const commonCopy: CommonCopy = payload.common;
+/** La promo se muestra solo mientras este vigente (hora de Lima). */
+export function activePromo(service: ServiceItem): ServicePromo | undefined {
+  const promo = service.promo;
+  if (!promo) return undefined;
+  if (!promo.validUntil) return promo;
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date());
+  return today <= promo.validUntil ? promo : undefined;
+}
+
 export const clients: ClientLogo[] = (payload as { clients?: ClientLogo[] }).clients ?? [];
 export const rawSiteConfig: SiteConfigData = payload.siteConfig;
 export const designConfig: DesignConfig = disenoJson as DesignConfig;

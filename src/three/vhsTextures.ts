@@ -80,6 +80,36 @@ async function loadSvgImage(markup: string): Promise<HTMLImageElement> {
   }
 }
 
+/** Huella pequeña de como se ve la imagen (para saber si ya termino de pintarse). */
+function imageFingerprint(img: HTMLImageElement, w: number, h: number): Uint8ClampedArray {
+  const probe = document.createElement('canvas');
+  probe.width = 48;
+  probe.height = Math.round((48 * h) / w);
+  const ctx = probe.getContext('2d', { willReadFrequently: true })!;
+  ctx.drawImage(img, 0, 0, probe.width, probe.height);
+  return ctx.getImageData(0, 0, probe.width, probe.height).data;
+}
+
+const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+/**
+ * Safari (iPhone y Mac) avisa que la imagen SVG cargo antes de terminar de cargar las
+ * fuentes que lleva dentro: si se dibuja en ese momento, la caratula sale sin titulos.
+ * Se espera a que dos dibujos seguidos salgan iguales (como maximo ~1.2 s).
+ */
+async function waitForSvgFonts(img: HTMLImageElement, w: number, h: number): Promise<void> {
+  let previous = imageFingerprint(img, w, h);
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await wait(attempt === 0 ? 120 : 200);
+    const current = imageFingerprint(img, w, h);
+    let diff = 0;
+    for (let i = 0; i < current.length; i += 4) diff += Math.abs(current[i] - previous[i]);
+    // Igual dos veces seguidas: ya esta todo pintado
+    if (diff === 0) return;
+    previous = current;
+  }
+}
+
 /** Generador pseudoaleatorio con semilla: el desgaste es estable entre recargas. */
 function seeded(seed: number) {
   let s = seed % 2147483647;
@@ -200,6 +230,7 @@ export async function renderCoverCanvas(
 
   const w = Math.round(COVER_VIEWBOX.w * scale);
   const h = Math.round(COVER_VIEWBOX.h * scale);
+  await waitForSvgFonts(img, w, h);
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;

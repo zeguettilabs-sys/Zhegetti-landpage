@@ -1,11 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
+import { activePromo, getServiceById } from '../data/services';
 import { AdvisorPanel } from './AdvisorPanel';
+import { PromoCard } from './PromoCard';
 
 interface AdvisorApi {
-  /** Abre el panel de asesores; `serviceId` llega preseleccionado. */
-  open: (serviceId?: string) => void;
+  /**
+   * Abre el panel de asesores; `serviceId` llega preseleccionado.
+   * Con `{ promo: true }` muestra primero el afiche de la promo y al lado los asesores.
+   */
+  open: (serviceId?: string, options?: { promo?: boolean }) => void;
 }
 
 const AdvisorContext = createContext<AdvisorApi>({ open: () => undefined });
@@ -22,12 +27,12 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, textarea, [tabindex]:
  */
 export function AdvisorProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
-  const [state, setState] = useState<{ serviceId?: string } | null>(null);
+  const [state, setState] = useState<{ serviceId?: string; promo?: boolean } | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
-  const open = useCallback((serviceId?: string) => {
+  const open = useCallback((serviceId?: string, options?: { promo?: boolean }) => {
     openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setState({ serviceId });
+    setState({ serviceId, promo: options?.promo });
   }, []);
 
   const close = useCallback(() => {
@@ -46,12 +51,14 @@ export function AdvisorProvider({ children }: { children: ReactNode }) {
   return (
     <AdvisorContext.Provider value={api}>
       {children}
-      {state && host && createPortal(<AdvisorDialog serviceId={state.serviceId} onClose={close} />, host)}
+      {state && host && createPortal(<AdvisorDialog serviceId={state.serviceId} promo={state.promo} onClose={close} />, host)}
     </AdvisorContext.Provider>
   );
 }
 
-function AdvisorDialog({ serviceId, onClose }: { serviceId?: string; onClose: () => void }) {
+function AdvisorDialog({ serviceId, promo: showPromo, onClose }: { serviceId?: string; promo?: boolean; onClose: () => void }) {
+  const service = getServiceById(serviceId);
+  const promo = showPromo && service ? activePromo(service) : undefined;
   const rootRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closingRef = useRef(false);
@@ -107,7 +114,7 @@ function AdvisorDialog({ serviceId, onClose }: { serviceId?: string; onClose: ()
     <div ref={rootRef} className="adv-dialog" data-crt-warp="off" onClick={close}>
       <div
         ref={panelRef}
-        className="adv-dialog__panel"
+        className={`adv-dialog__panel${promo?.poster ? ' has-poster' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="adv-dialog-title"
@@ -115,22 +122,44 @@ function AdvisorDialog({ serviceId, onClose }: { serviceId?: string; onClose: ()
       >
         <div className="adv-dialog__bar">
           <span id="adv-dialog-title" className="adv-dialog__title">
-            [ CONTACTAR CON ASESOR ]
+            {promo?.poster ? '[ PROMOCIÓN DEL MES ]' : '[ CONTACTAR CON ASESOR ]'}
           </span>
           <button type="button" className="adv-dialog__close" onClick={close}>
             CERRAR[X]
           </button>
         </div>
-        <AdvisorPanel
-          serviceId={serviceId}
-          autoFocus
-          onSent={() => window.setTimeout(close, 250)}
-          intro={
-            <p className="adv__lead">
-              Elige qué quieres cotizar y con qué asesor hablar: te llevamos a WhatsApp con el mensaje ya escrito.
-            </p>
-          }
-        />
+        {promo?.poster ? (
+          <div className="adv-promo">
+            <PromoCard promo={promo} hint={false} />
+            <AdvisorPanel
+              serviceId={serviceId}
+              onlyAdvisors
+              onSent={() => window.setTimeout(close, 250)}
+              intro={
+                <div className="adv-promo__intro">
+                  <p className="adv-promo__headline">{promo.headline}</p>
+                  <ul className="adv-promo__list">
+                    {promo.includes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  {promo.validUntilLabel && <p className="adv-promo__until">{promo.validUntilLabel}.</p>}
+                </div>
+              }
+            />
+          </div>
+        ) : (
+          <AdvisorPanel
+            serviceId={serviceId}
+            autoFocus
+            onSent={() => window.setTimeout(close, 250)}
+            intro={
+              <p className="adv__lead">
+                Elige qué quieres cotizar y con qué asesor hablar: te llevamos a WhatsApp con el mensaje ya escrito.
+              </p>
+            }
+          />
+        )}
       </div>
     </div>
   );

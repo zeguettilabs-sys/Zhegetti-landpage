@@ -48,6 +48,8 @@ export interface ServicePromo {
   includes: string[];
   cta: string;
   message: string;
+  /** Afiche de la promo (se muestra como tarjeta 3D al final de la ficha). */
+  poster?: string;
 }
 
 /** Clientes cuyo logo se muestra en el cuadro de clientes. */

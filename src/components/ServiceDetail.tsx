@@ -11,6 +11,7 @@ import {
 import { useAdvisors } from './AdvisorDialog';
 import { CaseStudy, MonitorShot } from './CaseStudy';
 import { ContactActions } from './ContactSection';
+import { PromoCard } from './PromoCard';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
 import { ServiceMockup } from './ServiceMockup';
 import { VcrFooter } from './VcrStatus';
@@ -395,37 +396,26 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                 {service.descriptionDisplayLines.join(' ')}
               </p>
 
-              {promo && (
-                <div className="promo-box">
-                  <div className="promo-box__head">
-                    <span className="promo-box__tag">[ PROMOCIÓN DEL MES ]</span>
-                    {promo.from && <span className="promo-box__from">DESDE</span>}
-                    <span className="promo-box__price">{promo.priceLabel}</span>
-                  </div>
-                  <ul className="promo-box__list">
-                    {promo.includes.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+
+
+              <div className="detail-hero-actions">
+                {promo?.poster && (
                   <button
                     type="button"
-                    className="crt-btn crt-btn--primary promo-box__cta"
-                    onClick={() => openAdvisors(service.id)}
+                    className="crt-btn crt-btn--primary promo-open"
+                    onClick={() => openAdvisors(service.id, { promo: true })}
                   >
-                    [ {promo.cta} ]
+                    [ VER PROMO DESDE {promo.priceLabel} ]
                   </button>
-                  {promo.validUntilLabel && <p className="promo-box__until">{promo.validUntilLabel}.</p>}
-                </div>
-              )}
-
-
-              <Link
-                to="/"
-                state={{ activeServiceId: service.id }}
-                className="crt-btn"
-              >
-                [ VOLVER A SERVICIOS ]
-              </Link>
+                )}
+                <Link
+                  to="/"
+                  state={{ activeServiceId: service.id }}
+                  className="crt-btn"
+                >
+                  [ VOLVER A SERVICIOS ]
+                </Link>
+              </div>
             </div>
 
             {service.caseStudy?.hero ? (
@@ -513,10 +503,10 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
 
         {/* Panel 4: Cierre + Siguiente servicio con caratula VHS fisica (ref. 00:66) */}
         <section
-          className="detail-panel detail-panel--closing"
+          className={`detail-panel detail-panel--closing${promo?.poster ? ' has-promo' : ''}`}
           aria-labelledby="closing-heading"
         >
-          <div className="detail-next-stage">
+          <div className={`detail-next-stage${promo?.poster ? ' has-promo' : ''}`}>
             <div className="detail-closing-box">
               <p className="section-label">[ HABLEMOS ]</p>
               <h2 id="closing-heading" className="section-heading">
@@ -547,6 +537,8 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                 )}
               </div>
             </div>
+
+            {promo?.poster && <PromoCard promo={promo} onQuote={() => openAdvisors(service.id, { promo: true })} />}
 
             {nextService && (
               <Link

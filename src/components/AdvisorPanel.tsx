@@ -12,6 +12,8 @@ interface AdvisorPanelProps {
   onSent?: () => void;
   /** Foco inicial en el primer servicio (cuando se abre como dialogo). */
   autoFocus?: boolean;
+  /** Solo la lista de asesores (ventana de la promo: el servicio ya viene elegido). */
+  onlyAdvisors?: boolean;
 }
 
 const NONE = '';
@@ -21,7 +23,7 @@ const NONE = '';
  * mensaje corto y se pasa a WhatsApp con el texto ya armado, con cualquiera de los
  * tres asesores. Tambien se puede llamar o copiar el numero.
  */
-export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false }: AdvisorPanelProps) {
+export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false, onlyAdvisors = false }: AdvisorPanelProps) {
   const [selected, setSelected] = useState<string>(serviceId ?? NONE);
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
@@ -71,7 +73,8 @@ export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false }: Ad
   ];
 
   return (
-    <div className="adv">
+    <div className={`adv${onlyAdvisors ? ' adv--only' : ''}`}>
+      {!onlyAdvisors && (
       <div className="adv__col adv__col--form">
         {intro}
 
@@ -128,9 +131,17 @@ export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false }: Ad
           <span data-testid="advisor-preview">{message}</span>
         </p>
       </div>
+      )}
 
       <div className="adv__col adv__col--advisors">
-        <p className="adv__label">[ 3 · ELIGE UN ASESOR ]</p>
+        {onlyAdvisors && intro}
+        <p className="adv__label">{onlyAdvisors ? '[ ESCRIBE A UN ASESOR ]' : '[ 3 · ELIGE UN ASESOR ]'}</p>
+        {onlyAdvisors && (
+          <p className="adv__preview adv__preview--compact">
+            <span className="adv__label">MENSAJE QUE SE ENVIARÁ</span>
+            <span data-testid="advisor-preview">{message}</span>
+          </p>
+        )}
         <ul className="adv__list">
           {advisors.map((advisor) => (
             <li key={advisor.id} className="adv__advisor">

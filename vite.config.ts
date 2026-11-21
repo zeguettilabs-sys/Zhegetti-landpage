@@ -145,7 +145,7 @@ Sitemap: ${siteUrl}/sitemap.xml
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const siteUrl = (env.VITE_SITE_URL || 'https://zeguetti.com').replace(/\/+$/, '');
+  const siteUrl = (env.VITE_SITE_URL || 'https://www.zeguetti.com').replace(/\/+$/, '');
 
   return {
     plugins: [react(), seoPlugin(siteUrl)],

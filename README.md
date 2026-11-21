@@ -53,10 +53,10 @@ El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se a
 - En cada build se generan `sitemap.xml`, `robots.txt` y `404.html` desde `data/servicios.json` (plugin en `vite.config.ts`), además de un contenido `<noscript>` con servicios y contacto.
 - Imagen para compartir `public/og-image.jpg` (1200×630), íconos y `site.webmanifest`.
 
-La dirección pública se define con la variable `VITE_SITE_URL` (por defecto `https://zeguetti.com`). Copia `.env.example` a `.env` o pásala al compilar:
+La dirección pública se define con la variable `VITE_SITE_URL` (por defecto `https://www.zeguetti.com`). Copia `.env.example` a `.env` o pásala al compilar:
 
 ```bash
-VITE_SITE_URL=https://zeguetti.com npm run build
+VITE_SITE_URL=https://www.zeguetti.com npm run build
 ```
 
 Después de publicar, registra el sitio y envía `https://<tu-dominio>/sitemap.xml` en Google Search Console.

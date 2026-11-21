@@ -3,9 +3,9 @@ import { brandName } from '../data/services';
 
 /**
  * Direccion publica del sitio (sin "/" final). Se cambia con la variable de entorno
- * VITE_SITE_URL al compilar, por ejemplo: VITE_SITE_URL=https://zeguetti.com npm run build
+ * VITE_SITE_URL al compilar, por ejemplo: VITE_SITE_URL=https://www.zeguetti.com npm run build
  */
-export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://zeguetti.com').replace(/\/+$/, '');
+export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://www.zeguetti.com').replace(/\/+$/, '');
 export const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 interface SeoOptions {

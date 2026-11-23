@@ -39,7 +39,8 @@ El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se a
 
 ## Dónde se editan los datos
 
-- **Mostrar u ocultar un servicio.** Configura `"visible": false` en `data/servicios.json` para retirar la ficha del sitio, del sitemap y de los datos estructurados. Para volver a mostrarla, borra la línea o pon `true`. Si vuelves a activar Aplicaciones web, retira su redirección en `vercel.json`, `public/_redirects` y `src/pages/ServicePage.tsx`.
+- **Mostrar u ocultar un servicio.** Configura `"visible": false` en `data/servicios.json` para retirar la ficha del sitio, del sitemap y de los datos estructurados. Para volver a mostrarla, borra la línea o pon `true`.
+  - **Aplicaciones web.** La redirección a `/servicios/landing-pages` se usa mientras la ficha esté oculta. Si vuelve a mostrarse, elimina la regla de `/servicios/aplicaciones-web` en `vercel.json` y `public/_redirects` para que la URL sirva su propia ficha. Retira también la redirección del cliente en `src/pages/ServicePage.tsx`.
 - **Servicios y textos:** `data/servicios.json` (para sumar un servicio, añade un objeto; el campo opcional `example` muestra un proyecto publicado en su ficha).
 - **Asesores (WhatsApp):** `src/config/advisors.ts`.
 - **Correo y datos generales:** `siteConfig` en `data/servicios.json`.

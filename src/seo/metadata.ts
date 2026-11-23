@@ -1,13 +1,25 @@
-import { brandName, brandTagline, type ServiceItem } from '../data/services';
+import { activePromo, brandName, brandTagline, getServiceById, type ServiceItem } from '../data/services';
 
 export const INDEX_ROBOTS = 'index, follow, max-image-preview:large';
 export const NOINDEX_ROBOTS = 'noindex, follow';
 
-export const homeSeo = {
-  path: '/',
-  title: `Diseño web y landing pages en Perú | ${brandName}`,
-  description: `${brandTagline} Creamos tu página web o landing page a medida, adaptada a celulares y con contacto por WhatsApp.`,
-};
+function landingPromoDescription(service?: ServiceItem) {
+  const promo = service?.id === 'landing-pages' ? activePromo(service) : undefined;
+  if (!promo) return undefined;
+  const pricePrefix = promo.from ? 'desde' : 'por';
+  return `${pricePrefix} ${promo.priceLabel} con dominio, mantenimiento por 1 año y SEO`;
+}
+
+export function homeSeo() {
+  const promo = landingPromoDescription(getServiceById('landing-pages'));
+  return {
+    path: '/',
+    title: `Diseño web y landing pages en Perú | ${brandName}`,
+    description: promo
+      ? `${brandTagline} Landing pages en Perú ${promo}.`
+      : `${brandTagline} Creamos tu página web o landing page a medida, adaptada a celulares y con contacto por WhatsApp.`,
+  };
+}
 
 export const aboutSeo = {
   path: '/nosotros',
@@ -35,11 +47,14 @@ export const notFoundSeo = {
 };
 
 export function serviceSeo(service: ServiceItem) {
+  const promo = landingPromoDescription(service);
   return {
     path: service.path,
     title: service.id === 'landing-pages'
       ? `Diseño de landing pages para tu negocio | ${brandName}`
       : `${service.name} en Perú — ${brandName}`,
-    description: service.description,
+    description: promo
+      ? `Diseñamos tu landing page ${promo}. Presenta tu negocio y recibe consultas por WhatsApp.`
+      : service.description,
   };
 }

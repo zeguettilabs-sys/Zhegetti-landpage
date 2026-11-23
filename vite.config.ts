@@ -32,8 +32,9 @@ const esc = (s: string) =>
  */
 function seoPlugin(siteUrl: string): Plugin {
   const email = rawSiteConfig.email ?? 'contacto@zeguetti.com';
+  const home = homeSeo();
   const pages: PageSeo[] = [
-    homeSeo,
+    home,
     aboutSeo,
     contactSeo,
     ...services.map(serviceSeo),
@@ -51,7 +52,7 @@ function seoPlugin(siteUrl: string): Plugin {
         url: `${siteUrl}/`,
         logo: `${siteUrl}/icon-512.png`,
         image: `${siteUrl}/og-image.jpg`,
-        description: homeSeo.description,
+        description: home.description,
         email,
         telephone: PHONES[0],
         areaServed: { '@type': 'Country', name: 'Perú' },
@@ -152,7 +153,7 @@ Sitemap: ${siteUrl}/sitemap.xml
   return {
     name: 'zeguetti-seo',
     transformIndexHtml(html, context) {
-      return context.server ? renderPage(html, homeSeo) : html;
+      return context.server ? renderPage(html, home) : html;
     },
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);

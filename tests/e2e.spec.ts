@@ -26,7 +26,7 @@ test.describe('SEO servido en HTML', () => {
     await page.goto('/');
     await expect(page).toHaveTitle('Diseño web y landing pages en Perú | Zeguetti');
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
-      'content', /El diseño web que tu negocio merece/
+      'content', /El diseño web que tu negocio merecía\./
     );
     const favicon = page.locator('head link[rel="icon"]');
     await expect(favicon).toHaveAttribute('sizes', '192x192');
@@ -45,6 +45,26 @@ test.describe('SEO servido en HTML', () => {
   });
 });
 
+test('El precio SEO sigue la vigencia de la promoción en hora de Lima', async ({ page }) => {
+  const description = page.locator('meta[name="description"]');
+  const promo = /desde S\/ 100 con dominio, mantenimiento por 1 año y SEO/;
+
+  // El 21 ya empezó en UTC, pero en Lima sigue siendo el último día de la promo.
+  await page.clock.setFixedTime(new Date('2026-12-21T04:59:00Z'));
+  for (const route of ['/', '/servicios/landing-pages']) {
+    await page.goto(route);
+    await expect(page.locator('#root header')).toBeAttached();
+    await expect(description).toHaveAttribute('content', promo);
+  }
+
+  await page.clock.setFixedTime(new Date('2026-12-21T05:00:00Z'));
+  for (const route of ['/', '/servicios/landing-pages']) {
+    await page.goto(route);
+    await expect(page.locator('#root header')).toBeAttached();
+    await expect(description).not.toHaveAttribute('content', promo);
+  }
+});
+
 test('La entrada antigua de Aplicaciones web abre la ficha vigente', async ({ page }) => {
   await page.goto('/servicios/aplicaciones-web?utm_source=google');
   await expect(page).toHaveURL(/\/servicios\/landing-pages\?utm_source=google$/);
@@ -60,6 +80,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     test.setTimeout(60_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
+    await page.clock.setFixedTime(new Date('2026-12-20T17:00:00Z'));
     await page.goto('/');
 
     // Verificar pantalla de carga CRT inicial con rallitas y luego transición al inicio

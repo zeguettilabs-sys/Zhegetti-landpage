@@ -52,7 +52,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
 
   const timersRef = useRef<number[]>([]);
 
-  useSeo(homeSeo);
+  useSeo(homeSeo());
 
   // La entrada (encabezado, pie y estuches subiendo) se repite cada vez que se llega al inicio:
   // al volver desde otra pagina y tambien al pulsar el logo o INICIO estando ya aqui.

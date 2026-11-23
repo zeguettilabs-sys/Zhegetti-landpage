@@ -95,6 +95,14 @@ export function CrtLoader({ onComplete }: CrtLoaderProps) {
           <div className="crt-screen__glare" aria-hidden="true" />
           <div className="crt-screen__scanlines" aria-hidden="true" />
 
+          <img
+            className="crt-loader__logo"
+            src="/assets/logo-zeguetti-alpha.png"
+            alt=""
+            width={480}
+            height={398}
+          />
+
           <div className="crt-loader__bottom">
             <div className="crt-loader__meta">
               <span className="crt-loader__label">

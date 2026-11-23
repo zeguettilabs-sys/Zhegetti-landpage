@@ -6,6 +6,7 @@ import { ShowcaseGlobe, type GlobeStatus } from '../components/ShowcaseGlobe';
 import { ShowcaseLightbox } from '../components/ShowcaseLightbox';
 import { VcrFooter } from '../components/VcrStatus';
 import { brandName } from '../data/services';
+import { showcaseSeo } from '../seo/metadata';
 import { buildShowcaseCards, tickerHeadlines, type ShowcaseCard } from '../three/showcaseCards';
 import { useLiteMode } from '../hooks/useLite';
 import { useSeo } from '../seo/useSeo';
@@ -34,12 +35,7 @@ export function ShowcasePage() {
   }, [lite]);
 
   // Mientras la vitrina sea ilustrativa, no se indexa
-  useSeo({
-    title: `Vitrina — ${brandName}`,
-    description: 'Vitrina ilustrativa de pantallas y servicios de Zeguetti.',
-    path: '/vitrina',
-    noindex: true,
-  });
+  useSeo(showcaseSeo);
 
   // Solo escritorio
   useEffect(() => {

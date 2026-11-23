@@ -128,10 +128,10 @@ function Loop() {
 
       <div className="prof-pair">
         <Col label="ENFOQUE" side="left">
-          <Line>OPERACIÓN ORDENADA EN UN SOLO LUGAR</Line>
-          <Line>HERRAMIENTAS PROPIAS ADAPTADAS AL EQUIPO</Line>
-          <Line>FLUJOS AUTOMÁTICOS SIN REPROCESOS</Line>
-          <Line>SISTEMAS Y DATOS CONECTADOS</Line>
+          <Line>DISEÑO WEB A MEDIDA</Line>
+          <Line>EXPERIENCIA ADAPTADA A CELULARES</Line>
+          <Line>PÁGINAS PREPARADAS PARA GOOGLE</Line>
+          <Line>CONTACTO DIRECTO POR WHATSAPP</Line>
         </Col>
         <Col label="DATOS" side="right" className="is-roles">
           <Line>

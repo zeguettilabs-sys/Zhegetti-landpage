@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { notFoundSeo } from '../seo/metadata';
 import { CrtShell } from '../components/CrtShell';
 import { brandName } from '../data/services';
 import { useSeo } from '../seo/useSeo';
@@ -16,10 +17,8 @@ const BARS = ['#c9c9c9', '#c9c437', '#38c4c4', '#36c43a', '#c436c1', '#c43636', 
  */
 export function NotFoundPage({ requestedSlug }: NotFoundPageProps) {
   useSeo({
-    title: `Página no encontrada — ${brandName}`,
-    description: 'La dirección que buscas no existe. Vuelve al inicio para ver los servicios de Zeguetti.',
+    ...notFoundSeo,
     path: typeof window !== 'undefined' ? window.location.pathname : '/',
-    noindex: true,
   });
 
   return (

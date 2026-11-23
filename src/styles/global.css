@@ -699,6 +699,14 @@ html.channel-on .crt-content *::after {
   justify-content: flex-end;
 }
 
+.crt-loader__logo {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: clamp(84px, 16vmin, 142px);
+  height: auto;
+}
+
 .crt-loader__bottom {
   position: relative;
   z-index: 40;

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { brandName } from '../data/services';
+import { INDEX_ROBOTS, NOINDEX_ROBOTS } from './metadata';
 
 /**
  * Direccion publica del sitio (sin "/" final). Se cambia con la variable de entorno
@@ -42,8 +43,8 @@ function setCanonical(href: string) {
 
 /**
  * Titulo, descripcion, URL canonica, Open Graph / Twitter y datos estructurados
- * de cada ruta. Google ejecuta JavaScript, asi que cada pagina queda con sus
- * propias etiquetas; el index.html trae las de la portada por si un bot no lo hace.
+ * de cada ruta durante la navegación interna. El HTML del build contiene
+ * los mismos metadatos para las visitas directas.
  */
 export function useSeo({ title, description, path, noindex = false, jsonLd = null }: SeoOptions) {
   const ld = jsonLd ? JSON.stringify(jsonLd) : '';
@@ -52,7 +53,7 @@ export function useSeo({ title, description, path, noindex = false, jsonLd = nul
     const url = `${SITE_URL}${path === '/' ? '/' : path}`;
     document.title = title;
     setMeta('name', 'description', description);
-    setMeta('name', 'robots', noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large');
+    setMeta('name', 'robots', noindex ? NOINDEX_ROBOTS : INDEX_ROBOTS);
     setMeta('property', 'og:title', title);
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:url', url);

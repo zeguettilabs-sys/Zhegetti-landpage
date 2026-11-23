@@ -19,6 +19,37 @@ function trackPageErrors(page: Page) {
   return errors;
 }
 
+test.describe('SEO servido en HTML', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('La portada anuncia diseño web y sirve el favicon de Zeguetti', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('Diseño web y landing pages en Perú | Zeguetti');
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content', /El diseño web que tu negocio merece/
+    );
+    const favicon = page.locator('head link[rel="icon"]');
+    await expect(favicon).toHaveAttribute('sizes', '192x192');
+    const image = await page.request.get((await favicon.getAttribute('href'))!);
+    expect(image.ok()).toBe(true);
+    expect(image.headers()['content-type']).toContain('image/png');
+  });
+
+  test('La ficha tiene su propia URL canónica y descripción antes de ejecutar React', async ({ page }) => {
+    await page.goto('/servicios/landing-pages');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href', 'https://www.zeguetti.com/servicios/landing-pages'
+    );
+    await expect(page).toHaveTitle('Diseño de landing pages para tu negocio | Zeguetti');
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', await page.title());
+  });
+});
+
+test('La entrada antigua de Aplicaciones web abre la ficha vigente', async ({ page }) => {
+  await page.goto('/servicios/aplicaciones-web?utm_source=google');
+  await expect(page).toHaveURL(/\/servicios\/landing-pages\?utm_source=google$/);
+});
+
 test.describe('Zeguetti Web — Verificación completa', () => {
   test.beforeAll(() => {
     ensureCapturesDir();
@@ -34,6 +65,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     // Verificar pantalla de carga CRT inicial con rallitas y luego transición al inicio
     const loader = page.locator('.crt-loader');
     await expect(loader).toBeVisible();
+    await expect(loader.locator('img[src="/assets/logo-zeguetti-alpha.png"]')).toBeVisible();
     await expect(loader).toContainText('LOADING');
     await expect(page.locator('.crt-loader__tick').first()).toBeVisible();
     await page.screenshot({
@@ -203,7 +235,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
   test('Ficha de Landing pages, recarga directa, servicios ocultos y ruta 404', async ({
     page,
   }) => {
-    // Recorre la ficha completa, la galeria, 4 servicios ocultos y la 404
+    // Recorre la ficha completa, la galeria, los servicios retirados y la 404
     test.setTimeout(75_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
@@ -286,7 +318,6 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     // Los servicios ocultos ("visible": false en data/servicios.json) no existen para el visitante
     for (const hidden of [
       '/servicios/sistemas-a-medida',
-      '/servicios/aplicaciones-web',
       '/servicios/automatizacion',
       '/servicios/integraciones-apis',
     ]) {

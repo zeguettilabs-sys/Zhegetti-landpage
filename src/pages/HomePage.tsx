@@ -4,7 +4,8 @@ import { CrtShell } from '../components/CrtShell';
 import { Header } from '../components/Header';
 import { ServiceCarousel } from '../components/ServiceCarousel';
 import { VcrFooter } from '../components/VcrStatus';
-import { brandName, brandTagline, services, type ServiceItem } from '../data/services';
+import { brandTagline, services, type ServiceItem } from '../data/services';
+import { homeSeo } from '../seo/metadata';
 import { useSeo } from '../seo/useSeo';
 
 interface HomeRouteState {
@@ -51,12 +52,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
 
   const timersRef = useRef<number[]>([]);
 
-  useSeo({
-    title: `${brandName} | Landing pages para tu negocio en Perú`,
-    description:
-      'Zeguetti crea landing pages para negocios en Perú. Desde S/ 100 con dominio, mantenimiento por 1 año y posicionamiento SEO. Cotiza por WhatsApp.',
-    path: '/',
-  });
+  useSeo(homeSeo);
 
   // La entrada (encabezado, pie y estuches subiendo) se repite cada vez que se llega al inicio:
   // al volver desde otra pagina y tambien al pulsar el logo o INICIO estando ya aqui.
@@ -133,7 +129,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
       <main id="main-content" className="home-main">
         <div className="home-hero">
           <h1 className="home-hero__sr-h1">
-            {brandName}: {brandTagline}
+            Diseño web y landing pages en Perú. {brandTagline}
           </h1>
 
           <div className="home-hero__hint-row">

@@ -3,7 +3,11 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/servicios/aplicaciones-web", "destination": "/servicios/landing-pages", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

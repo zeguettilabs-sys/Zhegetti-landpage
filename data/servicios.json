@@ -1,6 +1,6 @@
 {
   "brand": "Zeguetti",
-  "tagline": "Desarrollamos sistemas y soluciones digitales que simplifican tu operación y acompañan tu crecimiento.",
+  "tagline": "El diseño web que tu negocio merece.",
   "services": [
     {
       "id": "sistemas-a-medida",
@@ -181,11 +181,11 @@
         "Posiciona y muestra",
         "tu negocio."
       ],
-      "description": "Creamos tu landing page para posicionar tu marca en Google y mostrar tu negocio con claridad: rápida, confiable y lista para recibir consultas por WhatsApp.",
+      "description": "Diseñamos tu landing page a medida para presentar tu negocio, destacar en Google y recibir consultas por WhatsApp desde cualquier dispositivo.",
       "descriptionDisplayLines": [
-        "UNA LANDING PAGE PARA POSICIONAR TU MARCA EN",
-        "GOOGLE Y MOSTRAR TU NEGOCIO: RÁPIDA, CONFIABLE",
-        "Y LISTA PARA RECIBIR CONSULTAS POR WHATSAPP."
+        "TU LANDING PAGE A MEDIDA PARA MOSTRAR TU NEGOCIO,",
+        "DESTACAR EN GOOGLE Y RECIBIR CONSULTAS POR WHATSAPP",
+        "DESDE CUALQUIER DISPOSITIVO."
       ],
       "caption": "Una página que presenta tu negocio y convierte visitas en clientes.",
       "tags": [
@@ -366,8 +366,8 @@
         "description": "Lanzamos y seguimos mejorando."
       }
     ],
-    "contactTitle": "Hablemos de lo que quieres mejorar.",
-    "contactDescription": "Cuéntanos cómo funciona hoy tu negocio y qué necesitas simplificar."
+    "contactTitle": "Hablemos de tu página web.",
+    "contactDescription": "Cuéntanos qué hace tu negocio y qué quieres lograr con tu página web."
   },
   "siteConfig": {
     "email": "contacto@zeguetti.com",

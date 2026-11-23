@@ -1,24 +1,24 @@
-import { copyFileSync, existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { activePromo, brandName, rawSiteConfig, services } from './src/data/services';
+import {
+  aboutSeo,
+  contactSeo,
+  homeSeo,
+  INDEX_ROBOTS,
+  NOINDEX_ROBOTS,
+  notFoundSeo,
+  serviceSeo,
+  showcaseSeo,
+} from './src/seo/metadata';
 
-interface ServiceData {
-  id: string;
-  visible?: boolean;
-  name: string;
+interface PageSeo {
   path: string;
-  category: string;
+  title: string;
   description: string;
-  caption: string;
-  promo?: { price: number; currency: string; includes: string[]; validUntil?: string };
-}
-
-interface SiteData {
-  brand: string;
-  tagline: string;
-  services: ServiceData[];
-  siteConfig: { email: string | null };
+  noindex?: boolean;
 }
 
 const PHONES = ['+51 922 040 557', '+51 907 136 664', '+51 948 792 314'];
@@ -27,20 +27,19 @@ const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
- * SEO generado desde data/servicios.json en cada compilacion:
- *  - reemplaza __SITE_URL__ en index.html,
- *  - inserta los datos estructurados (schema.org) y un contenido <noscript> con
- *    los servicios y canales de contacto, para bots que no ejecutan JavaScript,
- *  - publica sitemap.xml, robots.txt y un 404.html (necesario en GitHub Pages
- *    para que las rutas de la SPA carguen al entrar directo o recargar).
+ * Genera un HTML por ruta con sus metadatos y el mismo bundle de React.
+ * Las fichas ocultas no generan HTML ni aparecen en el mapa del sitio.
  */
 function seoPlugin(siteUrl: string): Plugin {
-  const data = JSON.parse(readFileSync(new URL('./data/servicios.json', import.meta.url), 'utf8')) as SiteData;
-  const email = data.siteConfig.email ?? 'contacto@zeguetti.com';
-  // Los servicios con "visible": false no se publican (ni rutas, ni sitemap, ni datos estructurados)
-  data.services = data.services.filter((s) => s.visible !== false);
-  // La vitrina es ilustrativa: no va al sitemap y lleva noindex
-  const routes = ['/', '/nosotros', '/contacto', ...data.services.map((s) => s.path)];
+  const email = rawSiteConfig.email ?? 'contacto@zeguetti.com';
+  const pages: PageSeo[] = [
+    homeSeo,
+    aboutSeo,
+    contactSeo,
+    ...services.map(serviceSeo),
+    showcaseSeo,
+    { ...notFoundSeo, path: '/404' },
+  ];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -48,11 +47,11 @@ function seoPlugin(siteUrl: string): Plugin {
       {
         '@type': 'ProfessionalService',
         '@id': `${siteUrl}/#empresa`,
-        name: data.brand,
+        name: brandName,
         url: `${siteUrl}/`,
-        logo: `${siteUrl}/assets/logo-zeguetti.png`,
+        logo: `${siteUrl}/icon-512.png`,
         image: `${siteUrl}/og-image.jpg`,
-        description: data.tagline,
+        description: homeSeo.description,
         email,
         telephone: PHONES[0],
         areaServed: { '@type': 'Country', name: 'Perú' },
@@ -67,61 +66,78 @@ function seoPlugin(siteUrl: string): Plugin {
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
           name: 'Servicios web de Zeguetti',
-          itemListElement: data.services.map((s) => ({
-            '@type': 'Offer',
-            ...(s.promo
-              ? {
-                  price: String(s.promo.price),
-                  priceCurrency: s.promo.currency,
-                  ...(s.promo.validUntil ? { priceValidUntil: s.promo.validUntil } : {}),
-                  description: s.promo.includes.join(' · '),
-                }
-              : {}),
-            itemOffered: {
-              '@type': 'Service',
-              name: s.name,
-              description: s.description,
-              url: `${siteUrl}${s.path}`,
-            },
-          })),
+          itemListElement: services.map((s) => {
+            const promo = activePromo(s);
+            return {
+              '@type': 'Offer',
+              ...(promo
+                ? {
+                    price: String(promo.price),
+                    priceCurrency: promo.currency,
+                    ...(promo.validUntil ? { priceValidUntil: promo.validUntil } : {}),
+                    description: promo.includes.join(' · '),
+                  }
+                : {}),
+              itemOffered: {
+                '@type': 'Service',
+                name: s.name,
+                description: s.description,
+                url: `${siteUrl}${s.path}`,
+              },
+            };
+          }),
         },
       },
       {
         '@type': 'WebSite',
         '@id': `${siteUrl}/#sitio`,
         url: `${siteUrl}/`,
-        name: data.brand,
+        name: brandName,
         inLanguage: 'es-PE',
         publisher: { '@id': `${siteUrl}/#empresa` },
       },
     ],
   };
 
-  const noscript = `<noscript>
-      <main class="noscript-seo">
-        <h1>${esc(data.brand)}: ${esc(data.tagline)}</h1>
-        <h2>Servicios</h2>
+  const homeContent = `<h2>Servicios</h2>
         <ul>
-${data.services
-  .map((s) => `          <li><a href="${s.path}">${esc(s.name)}</a>: ${esc(s.caption)}</li>`)
+${services
+  .map((s) => `          <li><a href="${esc(s.path)}">${esc(s.name)}</a>: ${esc(s.caption)}</li>`)
   .join('\n')}
-        </ul>
-        <h2>Contacto</h2>
-        <p>Cotiza con un asesor por WhatsApp: ${PHONES.map(esc).join(' · ')}. Correo: <a href="mailto:${email}">${email}</a>.</p>
-        <p><a href="/nosotros">Nosotros</a> · <a href="/contacto">Contacto</a></p>
+        </ul>`;
+
+  function renderPage(html: string, page: PageSeo) {
+    const isHome = page.path === '/';
+    const url = esc(`${siteUrl}${page.path}`);
+    const title = esc(page.title);
+    const description = esc(page.description);
+    const noscript = `<noscript>
+      <main class="noscript-seo">
+        <h1>${isHome ? esc('Diseño web y landing pages en Perú') : title}</h1>
+        <p>${description}</p>
+        ${isHome ? homeContent : ''}
+        <p><a href="/">Inicio</a> · <a href="/nosotros">Nosotros</a> · <a href="/contacto">Contacto</a></p>
+        <p>WhatsApp: ${PHONES.map(esc).join(' · ')}. Correo: <a href="mailto:${esc(email)}">${esc(email)}</a>.</p>
       </main>
     </noscript>`;
 
-  const today = new Date().toISOString().slice(0, 10);
+    return html
+      .replaceAll('__SITE_URL__', () => esc(siteUrl))
+      .replaceAll('__SEO_TITLE__', () => title)
+      .replaceAll('__SEO_DESCRIPTION__', () => description)
+      .replaceAll('__SEO_URL__', () => url)
+      .replaceAll('__SEO_ROBOTS__', page.noindex ? NOINDEX_ROBOTS : INDEX_ROBOTS)
+      .replace('<!--seo:canonical-->', () => page.path === '/404' ? '' : `<link rel="canonical" href="${url}" />`)
+      .replace('<!--seo:jsonld-->', () => isHome
+        ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replaceAll('<', '\\u003c')}</script>`
+        : '')
+      .replace('<!--seo:noscript-->', () => noscript);
+  }
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${routes
-  .map(
-    (r) =>
-      `  <url><loc>${siteUrl}${r}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>${
-        r === '/' ? '1.0' : r.startsWith('/servicios/') ? '0.9' : '0.7'
-      }</priority></url>`
-  )
+${pages.filter((page) => !page.noindex)
+  .map((page) => `  <url><loc>${esc(`${siteUrl}${page.path}`)}</loc></url>`)
   .join('\n')}
 </urlset>
 `;
@@ -135,11 +151,8 @@ Sitemap: ${siteUrl}/sitemap.xml
 
   return {
     name: 'zeguetti-seo',
-    transformIndexHtml(html) {
-      return html
-        .replaceAll('__SITE_URL__', siteUrl)
-        .replace('<!--seo:jsonld-->', `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`)
-        .replace('<!--seo:noscript-->', noscript);
+    transformIndexHtml(html, context) {
+      return context.server ? renderPage(html, homeSeo) : html;
     },
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
@@ -148,9 +161,13 @@ Sitemap: ${siteUrl}/sitemap.xml
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots });
     },
-    closeBundle() {
-      const index = resolve(outDir, 'index.html');
-      if (outDir && existsSync(index)) copyFileSync(index, resolve(outDir, '404.html'));
+    writeBundle() {
+      const html = readFileSync(resolve(outDir, 'index.html'), 'utf8');
+      for (const page of pages) {
+        const file = resolve(outDir, page.path === '/' ? 'index.html' : `${page.path.slice(1)}.html`);
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, renderPage(html, page));
+      }
     },
   };
 }

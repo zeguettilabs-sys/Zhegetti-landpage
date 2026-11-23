@@ -4,7 +4,7 @@ import { ContactSection } from '../components/ContactSection';
 import { CrtShell } from '../components/CrtShell';
 import { Header } from '../components/Header';
 import { VcrFooter } from '../components/VcrStatus';
-import { brandName } from '../data/services';
+import { contactSeo } from '../seo/metadata';
 import { useSeo } from '../seo/useSeo';
 
 interface RouteState {
@@ -15,12 +15,7 @@ export function ContactPage() {
   const location = useLocation();
   const state = (location.state as RouteState | null) ?? null;
 
-  useSeo({
-    title: `Contacto y cotización — ${brandName}`,
-    description:
-      'Cotiza tu sistema, aplicación web o landing page con un asesor de Zeguetti por WhatsApp (+51 922 040 557) o escríbenos a contacto@zeguetti.com.',
-    path: '/contacto',
-  });
+  useSeo(contactSeo);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });

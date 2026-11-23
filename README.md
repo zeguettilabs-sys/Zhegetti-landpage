@@ -42,6 +42,7 @@ El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se a
 
 ## Dónde se editan los datos
 
+- **Mostrar u ocultar un servicio:** campo `"visible": false` en el servicio dentro de `data/servicios.json`. Un servicio oculto no aparece en el carrusel, su ficha da 404, sale del sitemap y de los datos estructurados, y la numeración (01 / 01) se recalcula sola. Para volver a mostrarlo, borra la línea o pon `true`. Hoy solo se muestra **Landing pages**; los otros cuatro quedan guardados.
 - **Servicios y textos:** `data/servicios.json` (para sumar un servicio, añade un objeto; el campo opcional `example` muestra un proyecto publicado en su ficha).
 - **Asesores (WhatsApp):** `src/config/advisors.ts`.
 - **Correo y datos generales:** `siteConfig` en `data/servicios.json`.

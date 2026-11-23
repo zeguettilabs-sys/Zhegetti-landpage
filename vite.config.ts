@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 
 interface ServiceData {
   id: string;
+  visible?: boolean;
   name: string;
   path: string;
   category: string;
@@ -36,6 +37,8 @@ const esc = (s: string) =>
 function seoPlugin(siteUrl: string): Plugin {
   const data = JSON.parse(readFileSync(new URL('./data/servicios.json', import.meta.url), 'utf8')) as SiteData;
   const email = data.siteConfig.email ?? 'contacto@zeguetti.com';
+  // Los servicios con "visible": false no se publican (ni rutas, ni sitemap, ni datos estructurados)
+  data.services = data.services.filter((s) => s.visible !== false);
   // La vitrina es ilustrativa: no va al sitemap y lleva noindex
   const routes = ['/', '/nosotros', '/contacto', ...data.services.map((s) => s.path)];
 
@@ -63,7 +66,7 @@ function seoPlugin(siteUrl: string): Plugin {
         })),
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
-          name: 'Servicios de desarrollo de software',
+          name: 'Servicios web de Zeguetti',
           itemListElement: data.services.map((s) => ({
             '@type': 'Offer',
             ...(s.promo

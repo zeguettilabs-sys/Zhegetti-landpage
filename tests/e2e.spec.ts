@@ -24,7 +24,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     ensureCapturesDir();
   });
 
-  test('Inicio, carrusel 3D, clic lateral, arrastre, teclado e historial (1440x960)', async ({ page }) => {
+  test('Inicio con una sola cinta (Landing pages): sin giro, clic, teclado e historial (1440x960)', async ({ page }) => {
     // Recorre muchas paginas y la entrada del inicio se repite en cada regreso
     test.setTimeout(60_000);
     const errors = trackPageErrors(page);
@@ -63,26 +63,8 @@ test.describe('Zeguetti Web — Verificación completa', () => {
         ? Math.abs(logoRect.left + logoRect.width / 2 - window.innerWidth / 2)
         : 999;
 
-      const card0 = document
-        .querySelector('[data-slot-offset="0"]')
-        ?.getBoundingClientRect();
-      const card1 = document
-        .querySelector('[data-slot-offset="1"]')
-        ?.getBoundingClientRect();
-      const card2 = document
-        .querySelector('[data-slot-offset="2"]')
-        ?.getBoundingClientRect();
-      const parabolicArc =
-        card0 && card1 && card2
-          ? card0.top + card0.height / 2 < card1.top + card1.height / 2 &&
-            card1.top + card1.height / 2 < card2.top + card2.height / 2
-          : false;
-
       const centerSleeveActive = document
         .querySelector('[data-slot-offset="0"] .cover-sleeve')
-        ?.getAttribute('data-active');
-      const sideSleeveActive = document
-        .querySelector('[data-slot-offset="1"] .cover-sleeve')
         ?.getAttribute('data-active');
       const centerCassetteRect = document
         .querySelector('[data-slot-offset="0"] .cover-cassette')
@@ -95,26 +77,18 @@ test.describe('Zeguetti Web — Verificación completa', () => {
           document.querySelector('[data-slot-offset="0"] .cover-card__shade')!
         ).opacity
       );
-      const sideShadeOpacity = Number(
-        getComputedStyle(
-          document.querySelector('[data-slot-offset="1"] .cover-card__shade')!
-        ).opacity
-      );
-
       return {
         docOverflow,
         docVerticalOverflow,
         logoComplete: Boolean(logo?.complete && logo.naturalWidth > 0),
         logoCenterOffset,
-        parabolicArc,
         centerSleeveActive,
-        sideSleeveActive,
         cassetteSticksOut: Boolean(
           centerCassetteRect &&
             centerCardRect &&
             centerCassetteRect.top < centerCardRect.top - 10
         ),
-        centerIlluminated: centerShadeOpacity === 0 && sideShadeOpacity > 0.2,
+        centerIlluminated: centerShadeOpacity === 0,
       };
     });
 
@@ -122,9 +96,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     expect(layoutMetrics.docVerticalOverflow).toBe(false);
     expect(layoutMetrics.logoComplete).toBe(true);
     expect(layoutMetrics.logoCenterOffset).toBeLessThan(20);
-    expect(layoutMetrics.parabolicArc).toBe(true);
     expect(layoutMetrics.centerSleeveActive).toBe('true');
-    expect(layoutMetrics.sideSleeveActive).toBe('false');
     expect(layoutMetrics.cassetteSticksOut).toBe(true);
     expect(layoutMetrics.centerIlluminated).toBe(true);
 
@@ -133,87 +105,46 @@ test.describe('Zeguetti Web — Verificación completa', () => {
       path: path.join(CAPTURES_DIR, 'escritorio-inicio-1440x960.png'),
     });
 
-    // Estado inicial sincronizado
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '01 / 05 · SISTEMAS A MEDIDA'
-    );
-    await expect(page.locator('.carousel-caption__cta')).toHaveAttribute(
-      'href',
-      '/servicios/sistemas-a-medida'
-    );
+    // Con un solo servicio visible: una sola cinta, sin flechas ni giro
+    await expect(page.locator('[data-slot-offset]')).toHaveCount(1);
+    await expect(page.locator('.carousel-stage')).toHaveAttribute('data-single', 'true');
+    await expect(page.locator('.carousel-caption__index')).toContainText('01 / 01 · LANDING PAGES');
+    await expect(page.locator('.carousel-caption__cta')).toHaveAttribute('href', '/servicios/landing-pages');
+    await expect(page.locator('.carousel-caption__cta')).toContainText('PROMO DESDE S/ 100');
+    await expect(page.locator('.carousel-arrow').first()).toHaveCSS('visibility', 'hidden');
+    await expect(page.getByText('[ ARRASTRA / EXPLORA ]')).toHaveCount(0);
+    // Los servicios ocultos no se nombran en la pantalla
+    await expect(page.locator('body')).not.toContainText('APLICACIONES WEB');
+    await expect(page.locator('body')).not.toContainText('SISTEMAS A MEDIDA');
 
     const initialHistoryLength = await page.evaluate(() => window.history.length);
 
-    // Flecha siguiente -> 02 Aplicaciones web (circular y sin contaminar historial)
-    await page.getByRole('button', { name: 'Siguiente servicio' }).click();
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '02 / 05 · APLICACIONES WEB'
-    );
-    await expect(page.locator('.carousel-caption__cta')).toHaveAttribute(
-      'href',
-      '/servicios/aplicaciones-web'
-    );
-
-    // Teclado ArrowRight -> 03 Automatización y ArrowLeft -> 02 Aplicaciones web
-    const carouselRegion = page.locator('#servicios');
-    await carouselRegion.focus();
+    // Teclado y arrastre (en el espacio vacio, no sobre la cinta) no cambian nada ni navegan
+    await page.locator('#servicios').focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '03 / 05 · AUTOMATIZACIÓN'
-    );
     await page.keyboard.press('ArrowLeft');
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '02 / 05 · APLICACIONES WEB'
-    );
-
-    // Flecha anterior dos veces para probar vuelta circular 02 -> 01 -> 05
-    await page.getByRole('button', { name: 'Servicio anterior' }).click();
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '01 / 05 · SISTEMAS A MEDIDA'
-    );
-    await page.getByRole('button', { name: 'Servicio anterior' }).click();
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '05 / 05 · LANDING PAGES'
-    );
-
-    const historyAfterSlides = await page.evaluate(() => window.history.length);
-    expect(historyAfterSlides).toBe(initialHistoryLength);
-
-    // Volver a 01
-    await page.getByRole('button', { name: 'Siguiente servicio' }).click();
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '01 / 05 · SISTEMAS A MEDIDA'
-    );
-
-    // Arrastrar horizontalmente >= 48px debe cambiar de tarjeta SIN navegar a ninguna ficha
     const stageBox = await page.locator('.carousel-stage').boundingBox();
     expect(stageBox).not.toBeNull();
     if (stageBox) {
       const cy = stageBox.y + stageBox.height / 2;
-      const cx = stageBox.x + stageBox.width / 2;
-      await page.mouse.move(cx, cy);
+      await page.mouse.move(stageBox.x + 40, cy);
       await page.mouse.down();
-      await page.mouse.move(cx - 140, cy, { steps: 10 });
+      await page.mouse.move(stageBox.x + 200, cy, { steps: 10 });
       await page.mouse.up();
     }
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '02 / 05 · APLICACIONES WEB'
-    );
+    await expect(page.locator('.carousel-caption__index')).toContainText('01 / 01 · LANDING PAGES');
+    expect(await page.evaluate(() => window.history.length)).toBe(initialHistoryLength);
 
-    // Clic directo en una tarjeta LATERAL visible (slot +1: 03 Automatizacion) abre su ficha sin centrarla antes
-    const lateralAutomatizacion = page
-      .locator('[data-carousel-visible="true"][data-slot-offset="1"] .carousel-card-link[href="/servicios/automatizacion"]');
-    await lateralAutomatizacion.click();
-    await expect(page).toHaveURL(/\/servicios\/automatizacion$/);
-    await expect(page.locator('h1')).toContainText('Menos tareas.');
+    // Clic en la cinta abre la ficha de Landing pages
+    await page.locator('[data-slot-offset="0"] .carousel-card-link').click();
+    await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
+    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
 
-    // Volver a servicios restaura esa tarjeta activa (03)
+    // Volver a servicios regresa a la cinta
     await page.getByRole('link', { name: '[ VOLVER A SERVICIOS ]' }).click();
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator('.carousel-caption__index')).toContainText(
-      '03 / 05 · AUTOMATIZACIÓN'
-    );
+    await expect(page.locator('.carousel-caption__index')).toContainText('01 / 01 · LANDING PAGES');
 
     // Navegación a Nosotros (objeto 3D VHS rotativo) y Contacto dentro del televisor CRT fijo
     await page.getByRole('link', { name: 'NOSOTROS', exact: true }).click();
@@ -269,54 +200,32 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     expect(errors).toEqual([]);
   });
 
-  test('Las 5 fichas de servicio, recarga directa, Siguiente servicio, Atrás y ruta 404', async ({
+  test('Ficha de Landing pages, recarga directa, servicios ocultos y ruta 404', async ({
     page,
   }) => {
+    // Recorre la ficha completa, la galeria, 4 servicios ocultos y la 404
+    test.setTimeout(75_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
 
-    const expectedOrder = [
-      {
-        path: '/servicios/sistemas-a-medida',
-        title: 'Tu operación,',
-        mockupText: 'Toda tu operación, conectada.',
-      },
-      {
-        path: '/servicios/aplicaciones-web',
-        title: 'Tu negocio,',
-        mockupText: 'Todo lo que necesitas,',
-      },
-      {
-        path: '/servicios/automatizacion',
-        title: 'Menos tareas.',
-        mockupText: 'De una solicitud a un resultado.',
-      },
-      {
-        path: '/servicios/integraciones-apis',
-        title: 'Tus herramientas,',
-        mockupText: 'Tus herramientas se entienden.',
-      },
-      {
-        path: '/servicios/landing-pages',
-        title: 'Posiciona y muestra',
-        mockupText: '',
-      },
-    ];
-
-    // Carga directa y recarga en Aplicaciones web
-    await page.goto('/servicios/aplicaciones-web');
+    // Carga directa y recarga en Landing pages
+    await page.goto('/servicios/landing-pages');
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
     await page.reload();
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
-    await expect(page.locator('h1')).toContainText('Tu negocio,');
-    await expect(page.locator('.mockup-surface')).toContainText(
-      'Todo lo que necesitas,'
-    );
+    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
+
+    // Ficha con caso real: monitor con la web del cliente
+    await expect(page.locator('.monitor-stage img')).toBeVisible();
+    await expect(page.locator('.monitor-caption')).toContainText('CASO REAL');
+    await expect(page.locator('a.monitor-caption')).toHaveAttribute('href', 'https://www.dalenabogada.com/');
+    await expect(page.locator('.capability-card')).toHaveCount(3);
+    await expect(page.locator('.process-grid article')).toHaveCount(4);
+
+    // Sin otros servicios no hay "siguiente cinta"
+    await expect(page.getByRole('link', { name: '[ SIGUIENTE SERVICIO ]' })).toHaveCount(0);
 
     // Captura de ficha en escritorio (1440x960) y comprobacion de TV sin scroll vertical + barra horizontal
-    await page.goto('/servicios/sistemas-a-medida');
-    await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
-    await expect(page.locator('h1')).toContainText('Tu operación,');
     const initialDetailMetrics = await page.evaluate(() => ({
       verticalOverflow:
         document.documentElement.scrollHeight > window.innerHeight,
@@ -330,22 +239,28 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     expect(initialDetailMetrics.progressValue).toBe(0);
 
     await page.screenshot({
-      path: path.join(CAPTURES_DIR, 'escritorio-ficha-sistemas-1440x960.png'),
+      path: path.join(CAPTURES_DIR, 'escritorio-ficha-landing-1440x960.png'),
     });
 
     // Scrollear horizontalmente con la rueda hacia la galeria curva y centrar pestaña 02/03 + verificar modal [AMPLIAR]
     const track = page.locator('.detail-track');
     await track.hover();
-    await page.mouse.wheel(0, 1250);
     await expect
-      .poll(async () =>
-        Number(
-          await page
-            .locator('.detail-progress-bar')
-            .getAttribute('aria-valuenow')
-        )
+      .poll(
+        async () => {
+          await page.mouse.wheel(0, 700);
+          await page.waitForTimeout(200);
+          return page.evaluate(() => {
+            const rect = document.querySelector('.curved-gallery__tab')?.getBoundingClientRect();
+            return Boolean(rect && rect.left >= 0 && rect.right <= window.innerWidth);
+          });
+        },
+        { timeout: 20_000 }
       )
-      .toBeGreaterThan(15);
+      .toBe(true);
+    expect(
+      Number(await page.locator('.detail-progress-bar').getAttribute('aria-valuenow'))
+    ).toBeGreaterThan(15);
 
     const middleTab = page.getByRole('tab', { name: /02 \/ 03/ });
     await middleTab.click();
@@ -368,34 +283,16 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
 
-    // Verificar recorrido completo Siguiente servicio: 01 -> 02 -> 03 -> 04 -> 05 -> 01
-    for (let i = 0; i < expectedOrder.length; i += 1) {
-      const current = expectedOrder[i];
-      await expect(page).toHaveURL(new RegExp(`${current.path}$`));
-      await expect(page.locator('h1')).toContainText(current.title);
-      if (current.mockupText) {
-        await expect(page.locator('.mockup-surface')).toContainText(current.mockupText);
-        await expect(page.locator('.mockup-caption')).toContainText('VISTA ILUSTRATIVA');
-      } else {
-        // Ficha con caso real: monitor con la web del cliente
-        await expect(page.locator('.monitor-stage img')).toBeVisible();
-        await expect(page.locator('.monitor-caption')).toContainText('CASO REAL');
-      }
-      await expect(page.locator('.capability-card')).toHaveCount(3);
-      await expect(page.locator('.process-grid article')).toHaveCount(4);
-
-      const nextLink = page.getByRole('link', { name: '[ SIGUIENTE SERVICIO ]' });
-      await nextLink.scrollIntoViewIfNeeded();
-      await nextLink.click();
+    // Los servicios ocultos ("visible": false en data/servicios.json) no existen para el visitante
+    for (const hidden of [
+      '/servicios/sistemas-a-medida',
+      '/servicios/aplicaciones-web',
+      '/servicios/automatizacion',
+      '/servicios/integraciones-apis',
+    ]) {
+      await page.goto(hidden);
+      await expect(page.locator('h1')).toContainText('No encontramos ese destino');
     }
-
-    await expect(page).toHaveURL(/\/servicios\/sistemas-a-medida$/);
-
-    // Botón Atrás del navegador funciona
-    await page.goBack();
-    await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
-    // La ficha de landing pages muestra el ejemplo publicado
-    await expect(page.locator('a.monitor-caption')).toHaveAttribute('href', 'https://www.dalenabogada.com/');
 
     // Ruta inválida muestra recuperación útil
     await page.goto('/servicios/servicio-inexistente');
@@ -482,7 +379,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(page.locator('#mobile-nav-drawer')).toBeHidden();
 
     // Ficha en móvil 390x844
-    await page.goto('/servicios/sistemas-a-medida');
+    await page.goto('/servicios/landing-pages');
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
     const detailOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth
@@ -504,12 +401,11 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await page.goto('/');
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
 
-    await page.getByRole('button', { name: 'Siguiente servicio' }).click();
     await expect(page.locator('.carousel-caption__index')).toContainText(
-      '02 / 05 · APLICACIONES WEB'
+      '01 / 01 · LANDING PAGES'
     );
-    await page.getByRole('link', { name: '[ VER SOLUCIÓN ]' }).click();
-    await expect(page).toHaveURL(/\/servicios\/aplicaciones-web$/);
+    await page.getByRole('link', { name: /PROMO DESDE S\/ 100/ }).click();
+    await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
 
     expect(errors).toEqual([]);
   });
@@ -552,7 +448,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     const dialog = page.getByRole('dialog', { name: /CONTACTAR CON ASESOR/ });
     await expect(dialog).toBeVisible();
 
-    await dialog.getByRole('radio', { name: 'AUTOMATIZACIÓN' }).click();
+    await dialog.getByRole('radio', { name: 'LANDING PAGES' }).click();
     await dialog.getByLabel('TU NOMBRE').fill('María');
     const links = dialog.locator('a.adv__go');
     await expect(links).toHaveCount(3);
@@ -562,12 +458,12 @@ test.describe('Zeguetti Web — Verificación completa', () => {
       const href = (await links.nth(i).getAttribute('href')) ?? '';
       expect(href.startsWith(`https://wa.me/${expected[i]}?text=`)).toBe(true);
       const text = decodeURIComponent(href.split('?text=')[1]);
-      expect(text).toContain('Automatización');
+      expect(text).toContain('Landing pages');
       expect(text).toContain('María');
     }
     await expect(dialog.locator('a[href^="tel:+51922040557"]')).toHaveCount(1);
     const mail = (await dialog.locator('a[href^="mailto:contacto@zeguetti.com"]').getAttribute('href')) ?? '';
-    expect(decodeURIComponent(mail)).toContain('subject=Cotización: Automatización');
+    expect(decodeURIComponent(mail)).toContain('subject=Cotización: Landing pages');
     expect(decodeURIComponent(mail)).toContain('María');
 
     await page.keyboard.press('Escape');
@@ -596,12 +492,11 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     expect(await page.evaluate(() => localStorage.getItem('zeguetti-lite'))).toBe('1');
 
     // El carrusel plano sigue funcionando
-    await page.getByRole('button', { name: 'Siguiente servicio' }).click();
-    await expect(page.locator('.carousel-caption__index')).toContainText('02 / 05 · APLICACIONES WEB');
+    await expect(page.locator('.carousel-caption__index')).toContainText('01 / 01 · LANDING PAGES');
 
     // Sin cambio de canal en modo ahorro
-    await page.getByRole('link', { name: '[ VER SOLUCIÓN ]' }).click();
-    await expect(page).toHaveURL(/\/servicios\/aplicaciones-web$/);
+    await page.getByRole('link', { name: /PROMO DESDE S\/ 100/ }).click();
+    await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
     await expect(page.locator('.crt-channel')).toHaveCount(0);
 
     // Se recuerda al recargar

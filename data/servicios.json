@@ -4,6 +4,7 @@
   "services": [
     {
       "id": "sistemas-a-medida",
+      "visible": false,
       "order": 1,
       "name": "Sistemas a medida",
       "path": "/servicios/sistemas-a-medida",
@@ -45,6 +46,7 @@
     },
     {
       "id": "aplicaciones-web",
+      "visible": false,
       "order": 2,
       "name": "Aplicaciones web",
       "path": "/servicios/aplicaciones-web",
@@ -86,6 +88,7 @@
     },
     {
       "id": "automatizacion",
+      "visible": false,
       "order": 3,
       "name": "Automatización",
       "path": "/servicios/automatizacion",
@@ -127,6 +130,7 @@
     },
     {
       "id": "integraciones-apis",
+      "visible": false,
       "order": 4,
       "name": "Integraciones y APIs",
       "path": "/servicios/integraciones-apis",

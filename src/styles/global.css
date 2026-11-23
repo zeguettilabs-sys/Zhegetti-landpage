@@ -1264,6 +1264,12 @@ html.channel-on .crt-content *::after {
   cursor: grabbing;
 }
 
+/* Un solo servicio visible: no se arrastra ni se gira */
+.carousel-stage[data-single='true'] {
+  cursor: default;
+  touch-action: auto;
+}
+
 /* Capa WebGL: estuches VHS con volumen, luz y curvatura de tubo CRT.
    Las tarjetas del DOM siguen ahi (invisibles) para clics, teclado y lectores. */
 .carousel-stage__webgl {

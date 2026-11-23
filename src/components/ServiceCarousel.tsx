@@ -151,6 +151,8 @@ export function ServiceCarousel({
   initialActiveId,
   onActiveChange,
 }: ServiceCarouselProps) {
+  // Con un solo servicio visible no hay nada que girar: una sola cinta, sin flechas ni arrastre
+  const single = services.length < 2;
   const initialIndex = (() => {
     const idx = services.findIndex((item) => item.id === initialActiveId);
     return idx >= 0 ? idx : 0;
@@ -316,11 +318,16 @@ export function ServiceCarousel({
     };
   }, []);
 
-  const step = useCallback((delta: number) => {
-    setVirtualIndex((prev) => prev + delta);
-  }, []);
+  const step = useCallback(
+    (delta: number) => {
+      if (single) return;
+      setVirtualIndex((prev) => prev + delta);
+    },
+    [single]
+  );
 
   const handleStagePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (single) return;
     if (event.button !== 0 && event.pointerType === 'mouse') return;
 
     suppressClickRef.current = false;
@@ -392,6 +399,7 @@ export function ServiceCarousel({
   };
 
   const handleStageWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (single) return;
     const primaryDelta =
       Math.abs(event.deltaX) > Math.abs(event.deltaY)
         ? event.deltaX
@@ -498,7 +506,7 @@ export function ServiceCarousel({
   const activeServicePromo = activePromo(activeService);
   const captionIndex = `${formatOrderFraction(activeService.order)} · ${activeService.name.toUpperCase()}`;
 
-  const slots3D: Stage3DSlot[] = SLOTS_RANGE.map((offset) => {
+  const slots3D: Stage3DSlot[] = (single ? [0] : SLOTS_RANGE).map((offset) => {
     const slotId = centerSlot + offset;
     const continuousOffset = slotId - animatedPos;
     const absDist = Math.abs(continuousOffset);
@@ -541,6 +549,7 @@ export function ServiceCarousel({
         ref={stageRef}
         className="carousel-stage"
         data-parabolic="true"
+        data-single={single ? 'true' : 'false'}
         data-dragging={isDragging ? 'true' : 'false'}
         data-webgl={webglStatus}
         onPointerDown={handleStagePointerDown}
@@ -565,7 +574,7 @@ export function ServiceCarousel({
           <span className="cursor-caption__i">[ VER SERVICIO ]</span>
         </p>
 
-        {SLOTS_RANGE.map((offset) => {
+        {(single ? [0] : SLOTS_RANGE).map((offset) => {
           const slotId = centerSlot + offset;
           const continuousOffset = slotId - animatedPos;
           const absDist = Math.abs(continuousOffset);
@@ -634,6 +643,9 @@ export function ServiceCarousel({
           className="carousel-arrow carousel-arrow--prev"
           aria-label="Servicio anterior"
           onClick={() => step(-1)}
+          tabIndex={single ? -1 : undefined}
+          aria-hidden={single || undefined}
+          style={single ? { visibility: 'hidden' } : undefined}
         >
           <span aria-hidden="true">←</span>
         </button>
@@ -662,6 +674,9 @@ export function ServiceCarousel({
           className="carousel-arrow carousel-arrow--next"
           aria-label="Siguiente servicio"
           onClick={() => step(1)}
+          tabIndex={single ? -1 : undefined}
+          aria-hidden={single || undefined}
+          style={single ? { visibility: 'hidden' } : undefined}
         >
           <span aria-hidden="true">→</span>
         </button>

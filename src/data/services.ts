@@ -77,6 +77,8 @@ export interface ServiceFeature {
 
 export interface ServiceItem {
   id: string;
+  /** false = servicio oculto de la web por ahora (sus datos se conservan para volver a activarlo). */
+  visible?: boolean;
   order: number;
   name: string;
   path: string;
@@ -160,7 +162,15 @@ const payload = serviciosJson as ServicesPayload;
 
 export const brandName = payload.brand;
 export const brandTagline = payload.tagline;
-export const services: ServiceItem[] = payload.services;
+/** Todos los servicios, tambien los ocultos (sus datos se conservan en data/servicios.json). */
+export const allServices: ServiceItem[] = payload.services;
+/**
+ * Servicios que se muestran en la web. Los marcados con "visible": false se omiten
+ * (carrusel, fichas, SEO) y la numeracion se recalcula: con uno solo queda 01 / 01.
+ */
+export const services: ServiceItem[] = payload.services
+  .filter((item) => item.visible !== false)
+  .map((item, index) => ({ ...item, order: index + 1 }));
 export const commonCopy: CommonCopy = payload.common;
 /** La promo se muestra solo mientras este vigente (hora de Lima). */
 export function activePromo(service: ServiceItem): ServicePromo | undefined {

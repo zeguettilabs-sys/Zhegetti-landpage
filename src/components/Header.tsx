@@ -134,7 +134,7 @@ export function Header({ activeServiceId }: HeaderProps) {
           onClick={() => setMenuOpen(false)}
         >
           <span>SERVICIOS</span>
-          <span>01–{String(services.length).padStart(2, '0')}</span>
+          <span>{services.length > 1 ? `01–${String(services.length).padStart(2, '0')}` : '01'}</span>
         </Link>
         <Link
           to="/nosotros"

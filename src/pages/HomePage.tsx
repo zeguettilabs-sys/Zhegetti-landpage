@@ -36,7 +36,7 @@ function resolveInitialServiceId(state: HomeRouteState | null): string {
   } catch {
     // Ignorar si sessionStorage no esta disponible
   }
-  return services[0]?.id ?? 'sistemas-a-medida';
+  return services[0]?.id ?? 'landing-pages';
 }
 
 export function HomePage({ bootReady = true }: HomePageProps) {
@@ -52,9 +52,9 @@ export function HomePage({ bootReady = true }: HomePageProps) {
   const timersRef = useRef<number[]>([]);
 
   useSeo({
-    title: `${brandName} | Sistemas a medida, apps web y landing pages en Perú`,
+    title: `${brandName} | Landing pages para tu negocio en Perú`,
     description:
-      'Zeguetti desarrolla sistemas a medida, aplicaciones web, automatización e integraciones en Perú. Landing page desde S/ 100 con dominio y mantenimiento por 1 año. Cotiza por WhatsApp.',
+      'Zeguetti crea landing pages para negocios en Perú. Desde S/ 100 con dominio, mantenimiento por 1 año y posicionamiento SEO. Cotiza por WhatsApp.',
     path: '/',
   });
 
@@ -137,7 +137,7 @@ export function HomePage({ bootReady = true }: HomePageProps) {
           </h1>
 
           <div className="home-hero__hint-row">
-            <span className="crt-eyebrow">[ ARRASTRA / EXPLORA ]</span>
+            {services.length > 1 && <span className="crt-eyebrow">[ ARRASTRA / EXPLORA ]</span>}
           </div>
 
           <ServiceCarousel

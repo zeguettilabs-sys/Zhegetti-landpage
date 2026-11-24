@@ -7,12 +7,13 @@ La interfaz imita un televisor CRT con carátulas VHS en 3D, cambio de canal ent
 
 ## Requisitos
 
-- Node.js `>= 20` y `npm`.
+- Node.js 20.19+, 22.13+ o 24+ y `npm`.
 
 ```bash
 npm install
 npm run dev        # desarrollo en http://127.0.0.1:5173
 npm run build      # comprobación de tipos + build de producción en dist/
+npm run lint       # ESLint para JavaScript y TypeScript
 npm run preview    # sirve dist/ en http://127.0.0.1:4173
 npm run test:e2e   # pruebas E2E (Playwright)
 ```
@@ -27,6 +28,9 @@ npm run test:e2e   # pruebas E2E (Playwright)
 | `/nosotros` | Perfil con funda VHS en 3D y texto en carrete. |
 | `/vitrina` | Globo 3D con tarjetas (contenido ilustrativo, `noindex`; solo escritorio). |
 | `/contacto` | Panel de asesores: WhatsApp, llamada y correo. |
+| `/terminos` | Términos de uso y condiciones generales de las ofertas. |
+| `/privacidad` | Política de privacidad y derechos ARCO. |
+| `/libro-de-reclamaciones` | Hoja virtual, registro y constancia imprimible. |
 | `*` | Pantalla "sin señal" (404). |
 
 ## Modo ahorro (equipos de poca potencia)
@@ -44,10 +48,27 @@ El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se a
 - **Servicios y textos:** `data/servicios.json` (para sumar un servicio, añade un objeto; el campo opcional `example` muestra un proyecto publicado en su ficha).
 - **Asesores (WhatsApp):** `src/config/advisors.ts`.
 - **Correo y datos generales:** `siteConfig` en `data/servicios.json`.
+- Edita los **datos legales y la promoción de landing pages** en `src/config/legal.ts`. La oferta base tiene un precio final de S/ 100 con IGV incluido y es válida hasta el 20 de diciembre de 2026 en Lima. Completa las restricciones y las unidades mínimas, que siguen en `[PENDIENTE]`. La fecha usa el formato `AAAA-MM-DD`.
+
+## Libro de Reclamaciones
+
+Define `VITE_LIBRO_RECLAMACIONES_ENDPOINT` en el entorno de Vite antes de compilar. Si está vacía y `legal.correoLegal` está configurado, el formulario abre un borrador con todos los campos. El consumidor lo envía desde su aplicación de correo. Mientras el correo legal siga en `[PENDIENTE]`, el Libro muestra «en implementación».
+
+- Con el endpoint configurado, la SPA envía un `POST` JSON con los campos de la hoja y un `solicitudId`. Si el consumidor vuelve a enviar los mismos datos tras un error, se conserva ese identificador.
+- El backend definitivo debe validar y registrar la hoja, asignar un número correlativo, un código de identificación y la fecha del registro en Lima. También debe enviar automáticamente una copia al correo del consumidor y conservar la hoja y su constancia según el plazo aplicable.
+- Reutiliza la misma constancia para un `solicitudId` ya registrado. Tras guardar la hoja y gestionar el envío automático, responde con un estado `2xx` y un JSON `{ "numero": "00001", "codigo": "LR-00001", "fecha": "2026-11-24" }`. La SPA muestra una copia imprimible con esa respuesta.
+- Para un endpoint de otro origen, configura HTTPS y CORS para admitir solicitudes `POST` JSON desde el sitio. Mantén las credenciales de correo y almacenamiento en el servidor. Las variables `VITE_*` se incluyen en el bundle público.
+
+## Consentimiento de analítica
+
+Con `VITE_ANALYTICS_SCRIPT_URL` vacía, el sitio prescinde del aviso y de los scripts de analítica. Para habilitarla, proporciona la URL del script o de un cargador propio en esa variable y vuelve a compilar. `src/components/CookieConsent.tsx` carga el script solo después de una aceptación y guarda la preferencia en `localStorage`. El visitante puede rechazar o cambiar su elección. Al retirar el consentimiento, la página se recarga sin el script.
+
+Antes de conectar un proveedor, incorpora a la política el alcance de su tratamiento, las cookies, su duración y los destinatarios. Añade al flujo de retirada la limpieza de las cookies del proveedor y su mecanismo de revocación, si corresponde.
 
 ## SEO
 
 - Título, descripción, URL canónica, Open Graph y Twitter Card por ruta. El build genera el HTML con los metadatos de `src/seo/metadata.ts`. `src/seo/useSeo.ts` aplica esos metadatos durante la navegación interna.
+- Al vencer la oferta, React retira la promoción y actualiza sus descripciones. El HTML estático generado antes del vencimiento conserva su fecha y descripción hasta el siguiente build.
 - Datos estructurados schema.org: `ProfessionalService` con catálogo de servicios y puntos de contacto (en `index.html`), y `Service` + `BreadcrumbList` en cada ficha.
 - En cada build se generan `sitemap.xml`, `robots.txt` y `404.html` desde `data/servicios.json` (plugin en `vite.config.ts`), además de un contenido `<noscript>` con servicios y contacto.
 - Imagen para compartir `public/og-image.jpg` (1200×630), íconos y `site.webmanifest`.

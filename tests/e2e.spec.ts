@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
+import { PENDIENTE, promoLanding } from '../src/config/legal';
 
 const CAPTURES_DIR = path.resolve(process.cwd(), 'capturas');
 
@@ -45,26 +46,48 @@ test.describe('SEO servido en HTML', () => {
   });
 });
 
-test('El precio SEO sigue la vigencia de la promoción en hora de Lima', async ({ page }) => {
+test('La promoción vence a medianoche en Lima en las dos rutas', async ({ page }) => {
   const description = page.locator('meta[name="description"]');
-  const promo = /desde S\/ 100 con dominio, mantenimiento por 1 año y SEO/;
+  const openGraphDescription = page.locator('meta[property="og:description"]');
+  const validity = /Válida hasta el 20 de diciembre de 2026/;
+  const conditions = page.getByRole('note', { name: 'Condiciones de la promoción' });
 
-  // El 21 ya empezó en UTC, pero en Lima sigue siendo el último día de la promo.
-  await page.clock.setFixedTime(new Date('2026-12-21T04:59:00Z'));
   for (const route of ['/', '/servicios/landing-pages']) {
+    await page.clock.setFixedTime(new Date('2026-12-21T04:59:59.999Z'));
     await page.goto(route);
-    await expect(page.locator('#root header')).toBeAttached();
-    await expect(description).toHaveAttribute('content', promo);
-  }
+    await expect(conditions).toContainText(validity);
+    await expect(description).toHaveAttribute('content', validity);
+    await expect(openGraphDescription).toHaveAttribute('content', validity);
 
-  await page.clock.setFixedTime(new Date('2026-12-21T05:00:00Z'));
-  for (const route of ['/', '/servicios/landing-pages']) {
-    await page.goto(route);
+    await page.clock.setFixedTime(new Date('2026-12-21T05:00:00.000Z'));
+    await page.reload();
     await expect(page.locator('#root header')).toBeAttached();
-    await expect(description).not.toHaveAttribute('content', promo);
+    await expect(description).not.toHaveAttribute('content', /S\/ 100/);
+    await expect(openGraphDescription).not.toHaveAttribute('content', validity);
+    await expect(conditions).toHaveCount(0);
+    await expect(page.locator('.promo-card')).toHaveCount(0);
   }
 });
 
+test('Una oferta abierta se retira al vencer sin recargar la ficha', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.clock.install({ time: new Date('2026-12-21T04:59:00Z') });
+  await page.clock.pauseAt(new Date('2026-12-21T04:59:10Z'));
+  await page.goto('/servicios/landing-pages');
+  await expect(page.locator('.promo-open')).toBeAttached();
+  await page.clock.runFor(1_000);
+  await page.locator('.promo-open').click();
+  const dialog = page.getByRole('dialog');
+  const poster = dialog.locator('.promo-card');
+  await expect(poster.locator('.promo-card__date')).toHaveText('Válida hasta el 20 de diciembre de 2026');
+
+  await page.clock.fastForward(49_000);
+  await expect(page.locator('.promo-open')).toHaveCount(0);
+  await expect(poster).toHaveCount(0);
+  await expect(page.locator('meta[name="description"]')).not.toHaveAttribute('content', /S\/ 100/);
+  await expect(dialog.getByRole('link', { name: /Escribir por WhatsApp/ }).first())
+    .not.toHaveAttribute('href', /S%2F%20100/);
+});
 test('La entrada antigua de Aplicaciones web abre la ficha vigente', async ({ page }) => {
   await page.goto('/servicios/aplicaciones-web?utm_source=google');
   await expect(page).toHaveURL(/\/servicios\/landing-pages\?utm_source=google$/);
@@ -80,7 +103,8 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     test.setTimeout(60_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
-    await page.clock.setFixedTime(new Date('2026-12-20T17:00:00Z'));
+    const promoDate = promoLanding.vigencia === PENDIENTE ? '2026-12-20' : promoLanding.vigencia;
+    await page.clock.setFixedTime(new Date(`${promoDate}T12:00:00-05:00`));
     await page.goto('/');
 
     // Verificar pantalla de carga CRT inicial con rallitas y luego transición al inicio
@@ -192,7 +216,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     // Clic en la cinta abre la ficha de Landing pages
     await page.locator('[data-slot-offset="0"] .carousel-card-link').click();
     await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
-    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
+    await expect(page.locator('h1')).toContainText(/Optimizada para\s*buscadores/);
 
     // Volver a servicios regresa a la cinta
     await page.getByRole('link', { name: '[ VOLVER A SERVICIOS ]' }).click();
@@ -266,7 +290,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
     await page.reload();
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
-    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
+    await expect(page.locator('h1')).toContainText(/Optimizada para\s*buscadores/);
 
     // Ficha con caso real: monitor con la web del cliente
     await expect(page.locator('.monitor-stage img')).toBeVisible();
@@ -456,7 +480,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(page.locator('.carousel-caption__index')).toContainText(
       '01 / 01 · LANDING PAGES'
     );
-    await page.getByRole('link', { name: /PROMO DESDE S\/ 100/ }).click();
+    await page.locator('.carousel-caption__cta').click();
     await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
 
     expect(errors).toEqual([]);
@@ -547,7 +571,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(page.locator('.carousel-caption__index')).toContainText('01 / 01 · LANDING PAGES');
 
     // Sin cambio de canal en modo ahorro
-    await page.getByRole('link', { name: /PROMO DESDE S\/ 100/ }).click();
+    await page.locator('.carousel-caption__cta').click();
     await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
     await expect(page.locator('.crt-channel')).toHaveCount(0);
 

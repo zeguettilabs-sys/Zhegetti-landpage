@@ -9,6 +9,7 @@ import {
   type ServiceItem,
 } from '../data/services';
 import { useLiteMode } from '../hooks/useLite';
+import { PromoConditions } from './PromoConditions';
 import { SwapText } from './SwapText';
 import { VhsCover } from './VhsCover';
 import {
@@ -664,9 +665,11 @@ export function ServiceCarousel({
             to={activeService.path}
             state={{ activeServiceId: activeService.id }}
             className={`carousel-caption__cta${ctaPhase ? ` cta-swap-${ctaPhase}` : ''}${activeServicePromo ? ' is-promo' : ''}`}
+            aria-describedby={activeServicePromo ? 'home-promo-conditions' : undefined}
           >
             {activeServicePromo ? `[ ${activeServicePromo.tag} → ]` : '[ VER SOLUCIÓN ]'}
           </Link>
+          {activeServicePromo && <PromoConditions id="home-promo-conditions" promo={activeServicePromo} />}
         </div>
 
         <button

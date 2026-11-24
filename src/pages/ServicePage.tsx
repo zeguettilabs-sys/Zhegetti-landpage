@@ -45,7 +45,6 @@ function ServiceContent({ service }: { service: ServiceItem }) {
                   ...(promo.validUntil ? { priceValidUntil: promo.validUntil } : {}),
                   description: promo.includes.join(' · '),
                   url: `${SITE_URL}${service.path}`,
-                  availability: 'https://schema.org/InStock',
                 },
               }
             : {}),

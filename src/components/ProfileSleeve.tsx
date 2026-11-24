@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { drawWear } from '../three/vhsTextures';
 import { brandName, services } from '../data/services';
 import { siteConfig } from '../config/site';
+import { legal } from '../config/legal';
 
 /** Funda de VHS del perfil (misma proporcion que la de Arc: 572 x 863). */
 export const SLEEVE_W = 571.83;
@@ -448,7 +449,7 @@ export function ProfileSleeve() {
           <span className="back-sticker">Disponible para nuevos proyectos</span>
           <span className="back-credits">
             {brandName} Home Video presenta una producción {brandName} · {services.map((item) => item.name).join(', ')}{' '}
-            · desarrollo y diseño {brandName} · © {siteConfig.edition} {brandName} Home Video · todos los derechos
+            · desarrollo y diseño {brandName} · © {siteConfig.edition} {legal.razonSocial} · todos los derechos
             reservados · queda prohibida la copia, alquiler o emisión no autorizada de este catálogo
           </span>
           <span className="back-barcode">

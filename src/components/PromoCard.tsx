@@ -1,4 +1,6 @@
 import { useRef, type PointerEvent } from 'react';
+import { advisors } from '../config/advisors';
+import { promoLanding } from '../config/legal';
 import type { ServicePromo } from '../data/services';
 
 /**
@@ -35,6 +37,10 @@ export function PromoCard({ promo, onQuote, hint = true }: { promo: ServicePromo
   const inner = (
     <>
       <img src={promo.poster} alt={onQuote ? '' : label} width={900} height={1125} decoding="async" draggable={false} />
+      {/* El arte original conserva su marco y gráfica. Estas líneas usan los datos vigentes. */}
+      <span className="promo-card__seo" aria-hidden="true">{promoLanding.incluye.seo}</span>
+      <span className="promo-card__date" aria-hidden="true">{promo.validUntilLabel}</span>
+      <span className="promo-card__phone" aria-hidden="true">WHATSAPP {advisors[0].display}</span>
       <span className="promo-card__glare" aria-hidden="true" />
       <span className="promo-card__edge" aria-hidden="true" />
     </>

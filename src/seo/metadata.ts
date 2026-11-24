@@ -1,4 +1,5 @@
 import { activePromo, brandName, brandTagline, getServiceById, type ServiceItem } from '../data/services';
+import { textoBeneficiosLanding } from '../config/legal';
 
 export const INDEX_ROBOTS = 'index, follow, max-image-preview:large';
 export const NOINDEX_ROBOTS = 'noindex, follow';
@@ -7,7 +8,8 @@ function landingPromoDescription(service?: ServiceItem) {
   const promo = service?.id === 'landing-pages' ? activePromo(service) : undefined;
   if (!promo) return undefined;
   const pricePrefix = promo.from ? 'desde' : 'por';
-  return `${pricePrefix} ${promo.priceLabel} con dominio, mantenimiento por 1 año y SEO`;
+  const validity = promo.validUntil && promo.validUntilLabel ? `. ${promo.validUntilLabel}` : '';
+  return `${pricePrefix} ${promo.priceLabel} con ${textoBeneficiosLanding()}${validity}`;
 }
 
 export function homeSeo() {
@@ -31,6 +33,24 @@ export const contactSeo = {
   path: '/contacto',
   title: `Cotiza tu página web o landing page | ${brandName}`,
   description: 'Cotiza el diseño de tu página web o landing page con Zeguetti por WhatsApp o correo.',
+};
+
+export const terminosSeo = {
+  path: '/terminos',
+  title: `Términos de uso | ${brandName}`,
+  description: 'Consulta los términos de uso de Zeguetti y las condiciones generales de sus ofertas de diseño web.',
+};
+
+export const privacidadSeo = {
+  path: '/privacidad',
+  title: `Política de privacidad | ${brandName}`,
+  description: 'Conoce cómo Zeguetti trata tus datos personales y cómo puedes ejercer tus derechos de privacidad en Perú.',
+};
+
+export const libroSeo = {
+  path: '/libro-de-reclamaciones',
+  title: `Libro de Reclamaciones | ${brandName}`,
+  description: 'Accede al Libro de Reclamaciones virtual de Zeguetti para presentar un reclamo o una queja.',
 };
 
 export const showcaseSeo = {

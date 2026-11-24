@@ -12,6 +12,7 @@ import { useAdvisors } from './AdvisorDialog';
 import { CaseStudy, MonitorShot } from './CaseStudy';
 import { ContactActions } from './ContactSection';
 import { PromoCard } from './PromoCard';
+import { PromoConditions } from './PromoConditions';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
 import { ServiceMockup } from './ServiceMockup';
 import { VcrFooter } from './VcrStatus';
@@ -163,11 +164,17 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
       const isDesktopTv = window.innerWidth >= 768 && window.innerHeight >= 680;
       if (!isDesktopTv) return;
 
-      const delta =
-        Math.abs(event.deltaX) > Math.abs(event.deltaY)
-          ? event.deltaX
-          : event.deltaY;
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const delta = horizontal ? event.deltaX : event.deltaY;
       if (Math.abs(delta) < 1) return;
+
+      // Deja que el panel recorra su contenido vertical antes de mover la cinta.
+      if (!horizontal && event.target instanceof Element) {
+        const panel = event.target.closest<HTMLElement>('.detail-panel');
+        if (panel && (delta < 0
+          ? panel.scrollTop > 0
+          : panel.scrollTop + panel.clientHeight < panel.scrollHeight - 1)) return;
+      }
 
       event.preventDefault();
       const base = wheelAnimatingRef.current
@@ -403,6 +410,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                   <button
                     type="button"
                     className="crt-btn crt-btn--primary promo-open"
+                    aria-describedby="service-promo-conditions"
                     onClick={() => openAdvisors(service.id, { promo: true })}
                   >
                     [ VER PROMO DESDE {promo.priceLabel} ]
@@ -416,6 +424,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                   [ VOLVER A SERVICIOS ]
                 </Link>
               </div>
+              {promo?.poster && <PromoConditions id="service-promo-conditions" promo={promo} />}
             </div>
 
             {service.caseStudy?.hero ? (

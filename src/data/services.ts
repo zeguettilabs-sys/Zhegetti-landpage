@@ -1,5 +1,6 @@
 import disenoJson from '../../data/diseno.json';
 import serviciosJson from '../../data/servicios.json';
+import { PENDIENTE, promoLanding, textoBeneficiosLanding } from '../config/legal';
 
 export type ServiceMockupType = 'dashboard' | 'portal' | 'workflow' | 'integrations' | 'landing';
 
@@ -172,12 +173,38 @@ export const services: ServiceItem[] = payload.services
   .filter((item) => item.visible !== false)
   .map((item, index) => ({ ...item, order: index + 1 }));
 export const commonCopy: CommonCopy = payload.common;
-/** La promo se muestra solo mientras este vigente (hora de Lima). */
+const limaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' });
+
+function landingPromo(): ServicePromo {
+  const { precio, moneda, precioVisible, incluye, vigencia } = promoLanding;
+  const validUntil = vigencia === PENDIENTE ? undefined : vigencia;
+  const dateLabel = validUntil && new Intl.DateTimeFormat('es-PE', {
+    dateStyle: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(`${validUntil}T00:00:00Z`));
+
+  return {
+    price: precio,
+    currency: moneda,
+    priceLabel: precioVisible,
+    from: true,
+    validUntil,
+    validUntilLabel: dateLabel ? `Válida hasta el ${dateLabel}` : `Vigencia: ${PENDIENTE}`,
+    tag: `PROMO DESDE ${precioVisible}`,
+    headline: `Tu landing page desde ${precioVisible}`,
+    includes: Object.values(incluye),
+    cta: `QUIERO MI LANDING DESDE ${precioVisible}`,
+    message: `Me interesa la promoción de landing page desde ${precioVisible} con ${textoBeneficiosLanding()}.`,
+    poster: '/assets/promo/landing-s100.jpg',
+  };
+}
+
+/** Cuando se confirma una fecha, la promo se muestra hasta el final de ese día en Lima. */
 export function activePromo(service: ServiceItem): ServicePromo | undefined {
-  const promo = service.promo;
+  const promo = service.id === 'landing-pages' ? landingPromo() : service.promo;
   if (!promo) return undefined;
   if (!promo.validUntil) return promo;
-  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date());
+  const today = limaDate.format(new Date());
   return today <= promo.validUntil ? promo : undefined;
 }
 

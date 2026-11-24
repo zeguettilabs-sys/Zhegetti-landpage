@@ -43,9 +43,10 @@ export function AdvisorPanel({ serviceId, intro, onSent, autoFocus = false, only
   useEffect(() => () => window.clearTimeout(copyTimer.current), []);
 
   const service = services.find((item) => item.id === selected);
+  const promoMessage = service ? activePromo(service)?.message : undefined;
   const message = useMemo(
-    () => buildAdvisorMessage({ serviceName: service?.name, name, note, extra: service ? activePromo(service)?.message : undefined }),
-    [service, name, note]
+    () => buildAdvisorMessage({ serviceName: service?.name, name, note, extra: promoMessage }),
+    [service, name, note, promoMessage]
   );
 
   const copy = async (id: string, text: string) => {

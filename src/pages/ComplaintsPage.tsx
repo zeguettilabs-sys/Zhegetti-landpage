@@ -97,7 +97,7 @@ export function ComplaintsPage() {
       </section>
       {receipt ? (
         <section className="complaint-receipt">
-          <h2 role="status">Hoja de Reclamación registrada</h2>
+          <h2 tabIndex={-1} ref={(heading) => heading?.focus()}>Hoja de Reclamación registrada</h2>
           <dl className="legal-list">
             <div><dt>Número de hoja</dt><dd>{receipt.reference.numero}</dd></div>
             <div><dt>Código de identificación</dt><dd>{receipt.reference.codigo}</dd></div>

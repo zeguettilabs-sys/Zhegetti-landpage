@@ -56,8 +56,8 @@ export function PrivacyPage() {
         <dl className="legal-list">
           <div><dt>Plazo para consultas y cotizaciones</dt><dd>{privacidad.plazoConsultas}</dd></div>
           <div><dt>Plazo para reclamos y quejas</dt><dd>{privacidad.plazoReclamaciones}</dd></div>
+          <div><dt>Plazo para registros técnicos</dt><dd>{privacidad.plazoRegistrosTecnicos}</dd></div>
         </dl>
-        <p>Los registros técnicos se conservan durante el tiempo necesario para operar y proteger el sitio.</p>
       </section>
       <section>
         <h2>WhatsApp, correo y proveedores</h2>

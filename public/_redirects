@@ -1,2 +1,5 @@
 /servicios/aplicaciones-web /servicios/landing-pages 301
+/terminos /terminos.html 200
+/privacidad /privacidad.html 200
+/libro-de-reclamaciones /libro-de-reclamaciones.html 200
 /* /index.html 200

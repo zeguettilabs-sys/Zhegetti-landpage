@@ -164,11 +164,17 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
       const isDesktopTv = window.innerWidth >= 768 && window.innerHeight >= 680;
       if (!isDesktopTv) return;
 
-      const delta =
-        Math.abs(event.deltaX) > Math.abs(event.deltaY)
-          ? event.deltaX
-          : event.deltaY;
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const delta = horizontal ? event.deltaX : event.deltaY;
       if (Math.abs(delta) < 1) return;
+
+      // Deja que el panel recorra su contenido vertical antes de mover la cinta.
+      if (!horizontal && event.target instanceof Element) {
+        const panel = event.target.closest<HTMLElement>('.detail-panel');
+        if (panel && (delta < 0
+          ? panel.scrollTop > 0
+          : panel.scrollTop + panel.clientHeight < panel.scrollHeight - 1)) return;
+      }
 
       event.preventDefault();
       const base = wheelAnimatingRef.current

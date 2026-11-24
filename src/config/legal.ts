@@ -10,6 +10,7 @@ export const legal = {
     bancoDatos: PENDIENTE,
     plazoConsultas: PENDIENTE,
     plazoReclamaciones: PENDIENTE,
+    plazoRegistrosTecnicos: PENDIENTE,
     proveedorHosting: PENDIENTE,
     proveedorCorreo: PENDIENTE,
     destinatariosYTransferencias: PENDIENTE,

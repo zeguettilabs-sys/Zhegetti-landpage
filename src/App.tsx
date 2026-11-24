@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AdvisorProvider } from './components/AdvisorDialog';
+import { CookieConsent } from './components/CookieConsent';
 import { CrtLoader } from './components/CrtLoader';
 import { useAutoLite } from './hooks/useLite';
 import { CrtTubeDefs } from './components/CrtTube';
@@ -45,6 +46,7 @@ export function App() {
           <Route path="/servicios/:serviceId" element={<ServicePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <CookieConsent />
       </AdvisorProvider>
     </BrowserRouter>
   );

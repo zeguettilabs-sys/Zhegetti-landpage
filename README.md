@@ -7,12 +7,13 @@ La interfaz imita un televisor CRT con carátulas VHS en 3D, cambio de canal ent
 
 ## Requisitos
 
-- Node.js `>= 20` y `npm`.
+- Node.js 20.19+, 22.13+ o 24+ y `npm`.
 
 ```bash
 npm install
 npm run dev        # desarrollo en http://127.0.0.1:5173
 npm run build      # comprobación de tipos + build de producción en dist/
+npm run lint       # ESLint para JavaScript y TypeScript
 npm run preview    # sirve dist/ en http://127.0.0.1:4173
 npm run test:e2e   # pruebas E2E (Playwright)
 ```
@@ -27,6 +28,9 @@ npm run test:e2e   # pruebas E2E (Playwright)
 | `/nosotros` | Perfil con funda VHS en 3D y texto en carrete. |
 | `/vitrina` | Globo 3D con tarjetas (contenido ilustrativo, `noindex`; solo escritorio). |
 | `/contacto` | Panel de asesores: WhatsApp, llamada y correo. |
+| `/terminos` | Términos de uso y condiciones generales de las ofertas. |
+| `/privacidad` | Política de privacidad y derechos ARCO. |
+| `/libro-de-reclamaciones` | Hoja virtual, registro y constancia imprimible. |
 | `*` | Pantalla "sin señal" (404). |
 
 ## Modo ahorro (equipos de poca potencia)
@@ -44,6 +48,21 @@ El pie de pantalla tiene un interruptor **AHORRO [ON/OFF]**. En modo ahorro se a
 - **Servicios y textos:** `data/servicios.json` (para sumar un servicio, añade un objeto; el campo opcional `example` muestra un proyecto publicado en su ficha).
 - **Asesores (WhatsApp):** `src/config/advisors.ts`.
 - **Correo y datos generales:** `siteConfig` en `data/servicios.json`.
+- Edita los **datos legales y la promoción de landing pages** en `src/config/legal.ts`. Completa los valores `[PENDIENTE]`. Indica el tratamiento del IGV sobre el precio total anunciado, las restricciones, las unidades mínimas y la fecha de fin en formato `AAAA-MM-DD`. Con la fecha pendiente, el CTA sigue visible. Una fecha confirmada activa el vencimiento al terminar ese día en Lima.
+
+## Libro de Reclamaciones
+
+Define `VITE_LIBRO_RECLAMACIONES_ENDPOINT` en el entorno de Vite antes de compilar. Déjala vacía para mostrar el formulario sin habilitar el envío.
+
+- La SPA envía un `POST` JSON con los campos de la hoja y un `solicitudId`. Si el consumidor vuelve a enviar los mismos datos tras un error, se conserva ese identificador.
+- El servidor valida y registra la hoja, asigna fecha de Lima, número correlativo y código, y envía una copia al campo `correo`. Debe reutilizar la misma constancia para un `solicitudId` ya registrado. Responde con un estado `2xx` y un JSON `{ "numero": "00001", "codigo": "LR-00001", "fecha": "2026-11-24" }` tras guardar la hoja y gestionar el correo. La SPA usa esa respuesta para mostrar la copia imprimible.
+- Para un endpoint de otro origen, configura HTTPS y CORS para admitir solicitudes `POST` JSON desde el sitio. Mantén las credenciales de correo y almacenamiento en el servidor. Las variables `VITE_*` se incluyen en el bundle público.
+
+## Consentimiento de analítica
+
+Con `VITE_ANALYTICS_SCRIPT_URL` vacía, el sitio prescinde del aviso y de los scripts de analítica. Para habilitarla, proporciona la URL del script o de un cargador propio en esa variable y vuelve a compilar. `src/components/CookieConsent.tsx` carga el script solo después de una aceptación y guarda la preferencia en `localStorage`. El visitante puede rechazar o cambiar su elección. Al retirar el consentimiento, la página se recarga sin el script.
+
+Antes de conectar un proveedor, incorpora a la política el alcance de su tratamiento, las cookies, su duración y los destinatarios. Añade al flujo de retirada la limpieza de las cookies del proveedor y su mecanismo de revocación, si corresponde.
 
 ## SEO
 

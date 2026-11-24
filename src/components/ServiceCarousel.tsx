@@ -669,7 +669,7 @@ export function ServiceCarousel({
           >
             {activeServicePromo ? `[ ${activeServicePromo.tag} → ]` : '[ VER SOLUCIÓN ]'}
           </Link>
-          {activeServicePromo && <PromoConditions id="home-promo-conditions" />}
+          {activeServicePromo && <PromoConditions id="home-promo-conditions" promo={activeServicePromo} />}
         </div>
 
         <button

@@ -8,7 +8,8 @@ function landingPromoDescription(service?: ServiceItem) {
   const promo = service?.id === 'landing-pages' ? activePromo(service) : undefined;
   if (!promo) return undefined;
   const pricePrefix = promo.from ? 'desde' : 'por';
-  return `${pricePrefix} ${promo.priceLabel} con ${textoBeneficiosLanding()}`;
+  const validity = promo.validUntil && promo.validUntilLabel ? `. ${promo.validUntilLabel}` : '';
+  return `${pricePrefix} ${promo.priceLabel} con ${textoBeneficiosLanding()}${validity}`;
 }
 
 export function homeSeo() {

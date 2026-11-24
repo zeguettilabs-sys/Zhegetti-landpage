@@ -34,9 +34,9 @@ export const promoLanding = {
     mantenimiento: 'Mantenimiento por 1 año',
     seo: 'SEO básico',
   },
-  igv: PENDIENTE,
-  // Al confirmarla, usar AAAA-MM-DD. La promoción vence al terminar ese día en Lima.
-  vigencia: PENDIENTE,
+  igv: 'Incluido',
+  // La promoción vence al terminar ese día en Lima.
+  vigencia: '2026-12-20',
   restricciones: PENDIENTE,
   unidadesMinimas: PENDIENTE,
 };

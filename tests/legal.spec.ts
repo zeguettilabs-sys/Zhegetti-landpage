@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { PENDIENTE, promoLanding } from '../src/config/legal';
 
 test.use({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
 
@@ -22,6 +21,7 @@ test('El pie legal permite navegar a las tres páginas desde el inicio', async (
 });
 
 test('Los enlaces legales quedan dentro del marco CRT de las páginas en escritorio', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-20T12:00:00-05:00'));
   for (const path of ['/servicios/landing-pages', '/contacto']) {
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(path);
@@ -32,7 +32,11 @@ test('Los enlaces legales quedan dentro del marco CRT de las páginas en escrito
     );
     expect(clipped, path).toBe(false);
     if (path === '/servicios/landing-pages') {
-      await expect(page.getByRole('note', { name: 'Condiciones de la promoción' })).toBeInViewport({ ratio: 0.99 });
+      const conditions = page.getByRole('note', { name: 'Condiciones de la promoción' });
+      await expect(conditions.getByText('Precio final base S/ 100 con IGV incluido.')).toBeInViewport({ ratio: 0.99 });
+      await expect(conditions.getByText('Válida hasta el 20 de diciembre de 2026.')).toBeInViewport({ ratio: 0.99 });
+      await conditions.scrollIntoViewIfNeeded();
+      await expect(conditions).toBeInViewport({ ratio: 0.99 });
     }
     await libro.click({ timeout: 5000 });
     await expect(page).toHaveURL(/\/libro-de-reclamaciones$/);
@@ -109,16 +113,15 @@ if (complaintsEndpoint) {
 }
 
 test('Las condiciones acompañan ambas llamadas a la acción de la promoción', async ({ page }) => {
-  const date = promoLanding.vigencia === PENDIENTE ? '2026-11-24' : promoLanding.vigencia;
-  await page.clock.setFixedTime(new Date(`${date}T12:00:00-05:00`));
+  await page.clock.setFixedTime(new Date('2026-12-20T12:00:00-05:00'));
   for (const path of ['/', '/servicios/landing-pages']) {
     await page.goto(path);
     const conditions = page.getByRole('note', { name: 'Condiciones de la promoción' }).first();
     await expect(conditions).toBeVisible();
     await expect(conditions).toContainText(/dominio.*mantenimiento por 1 año.*SEO básico/i);
-    await expect(conditions).toContainText(`IGV: ${promoLanding.igv}`);
-    await expect(conditions).toContainText(`Vigencia: ${promoLanding.vigencia}`);
-    await expect(conditions).toContainText(`Restricciones: ${promoLanding.restricciones}`);
+    await expect(conditions).toContainText('Precio final base S/ 100 con IGV incluido.');
+    await expect(conditions).toContainText('Válida hasta el 20 de diciembre de 2026');
+    await expect(conditions).toContainText('Restricciones: [PENDIENTE]');
   }
 });
 

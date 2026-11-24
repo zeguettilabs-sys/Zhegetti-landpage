@@ -424,7 +424,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                   [ VOLVER A SERVICIOS ]
                 </Link>
               </div>
-              {promo?.poster && <PromoConditions id="service-promo-conditions" />}
+              {promo?.poster && <PromoConditions id="service-promo-conditions" promo={promo} />}
             </div>
 
             {service.caseStudy?.hero ? (

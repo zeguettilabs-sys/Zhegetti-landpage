@@ -13,7 +13,7 @@ const pages = [
     file: 'index.html',
     title: 'Diseño web y landing pages en Perú | Zeguetti',
     description: promoEnLima
-      ? 'El diseño web que tu negocio merecía. Landing pages en Perú desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico.'
+      ? 'El diseño web que tu negocio merecía. Landing pages en Perú desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico. Válida hasta el 20 de diciembre de 2026.'
       : 'El diseño web que tu negocio merecía. Creamos tu página web o landing page a medida, adaptada a celulares y con contacto por WhatsApp.',
     canonical: `${site}/`,
   },
@@ -58,7 +58,7 @@ const pages = [
     file: 'servicios/landing-pages.html',
     title: 'Diseño de landing pages para tu negocio | Zeguetti',
     description: promoEnLima
-      ? 'Diseñamos tu landing page desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico. Presenta tu negocio y recibe consultas por WhatsApp.'
+      ? 'Diseñamos tu landing page desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico. Válida hasta el 20 de diciembre de 2026. Presenta tu negocio y recibe consultas por WhatsApp.'
       : 'Diseñamos tu landing page a medida, optimizada para buscadores, para presentar tu negocio y recibir consultas por WhatsApp desde cualquier dispositivo.',
     canonical: `${site}/servicios/landing-pages`,
   },

@@ -2,7 +2,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { activePromo, brandName, rawSiteConfig, services } from './src/data/services';
+import { activePromo, brandName, services } from './src/data/services';
+import { advisors } from './src/config/advisors';
+import { siteConfig } from './src/config/site';
 import {
   aboutSeo,
   contactSeo,
@@ -24,8 +26,6 @@ interface PageSeo {
   noindex?: boolean;
 }
 
-const PHONES = ['+51 922 040 557', '+51 907 136 664', '+51 948 792 314'];
-
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -34,7 +34,8 @@ const esc = (s: string) =>
  * Las fichas ocultas no generan HTML ni aparecen en el mapa del sitio.
  */
 function seoPlugin(siteUrl: string): Plugin {
-  const email = rawSiteConfig.email ?? 'contacto@zeguetti.com';
+  const email = siteConfig.email;
+  const phones = advisors.map((advisor) => advisor.display);
   const home = homeSeo();
   const pages: PageSeo[] = [
     home,
@@ -59,11 +60,11 @@ function seoPlugin(siteUrl: string): Plugin {
         logo: `${siteUrl}/icon-512.png`,
         image: `${siteUrl}/og-image.jpg`,
         description: home.description,
-        email,
-        telephone: PHONES[0],
+        ...(email ? { email } : {}),
+        telephone: phones[0],
         areaServed: { '@type': 'Country', name: 'Perú' },
         address: { '@type': 'PostalAddress', addressCountry: 'PE' },
-        contactPoint: PHONES.map((telephone) => ({
+        contactPoint: phones.map((telephone) => ({
           '@type': 'ContactPoint',
           telephone,
           contactType: 'sales',
@@ -124,7 +125,8 @@ ${services
         <p>${description}</p>
         ${isHome ? homeContent : ''}
         <p><a href="/">Inicio</a> · <a href="/nosotros">Nosotros</a> · <a href="/contacto">Contacto</a></p>
-        <p>WhatsApp: ${PHONES.map(esc).join(' · ')}. Correo: <a href="mailto:${esc(email)}">${esc(email)}</a>.</p>
+        <p>WhatsApp: ${phones.map(esc).join(' · ')}.${email ? ` Correo: <a href="mailto:${esc(email)}">${esc(email)}</a>.` : ''}</p>
+        <p><a href="${terminosSeo.path}">Términos de uso</a> · <a href="${privacidadSeo.path}">Política de privacidad</a> · <a href="${libroSeo.path}">Libro de Reclamaciones</a></p>
       </main>
     </noscript>`;
 

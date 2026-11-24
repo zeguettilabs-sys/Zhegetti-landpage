@@ -176,15 +176,15 @@
       "name": "Landing pages",
       "path": "/servicios/landing-pages",
       "category": "PRESENCIA DIGITAL",
-      "title": "Landing page para posicionar y mostrar tu negocio.",
+      "title": "Landing page optimizada para buscadores.",
       "titleLines": [
-        "Posiciona y muestra",
-        "tu negocio."
+        "Optimizada para",
+        "buscadores."
       ],
-      "description": "Diseñamos tu landing page a medida para presentar tu negocio, destacar en Google y recibir consultas por WhatsApp desde cualquier dispositivo.",
+      "description": "Diseñamos tu landing page a medida, optimizada para buscadores, para presentar tu negocio y recibir consultas por WhatsApp desde cualquier dispositivo.",
       "descriptionDisplayLines": [
-        "TU LANDING PAGE A MEDIDA PARA MOSTRAR TU NEGOCIO,",
-        "DESTACAR EN GOOGLE Y RECIBIR CONSULTAS POR WHATSAPP",
+        "TU LANDING PAGE A MEDIDA, OPTIMIZADA PARA BUSCADORES,",
+        "PARA MOSTRAR TU NEGOCIO Y RECIBIR CONSULTAS POR WHATSAPP",
         "DESDE CUALQUIER DISPOSITIVO."
       ],
       "caption": "Una página que presenta tu negocio y convierte visitas en clientes.",
@@ -199,7 +199,7 @@
           "description": "Tu propuesta, servicios y experiencia contados en una sola página."
         },
         {
-          "title": "Lista para Google",
+          "title": "Optimizada para buscadores",
           "description": "Optimizada para buscadores, redes sociales y carga rápida en el celular."
         },
         {
@@ -321,25 +321,6 @@
           "width": 1440,
           "height": 900
         }
-      },
-      "promo": {
-        "price": 100,
-        "currency": "PEN",
-        "priceLabel": "S/ 100",
-        "from": true,
-        "validUntil": "2026-12-20",
-        "validUntilLabel": "Válida hasta el 20 de diciembre de 2026",
-        "tag": "PROMO DESDE S/ 100",
-        "headline": "Tu landing page desde S/ 100",
-        "includes": [
-          "Diseño y desarrollo de tu landing page",
-          "Dominio por 1 año",
-          "Mantenimiento durante todo el año",
-          "Posicionamiento SEO"
-        ],
-        "cta": "QUIERO MI LANDING DESDE S/ 100",
-        "message": "Me interesa la promoción de landing page desde S/ 100 con dominio, mantenimiento por 1 año y posicionamiento SEO.",
-        "poster": "/assets/promo/landing-s100.jpg"
       }
     }
   ],

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
+import { PENDIENTE, promoLanding } from '../src/config/legal';
 
 const CAPTURES_DIR = path.resolve(process.cwd(), 'capturas');
 
@@ -45,23 +46,27 @@ test.describe('SEO servido en HTML', () => {
   });
 });
 
-test('El precio SEO sigue la vigencia de la promoción en hora de Lima', async ({ page }) => {
+test('La promoción vence en hora de Lima cuando se confirma la vigencia', async ({ page }) => {
   const description = page.locator('meta[name="description"]');
-  const promo = /desde S\/ 100 con dominio, mantenimiento por 1 año y SEO/;
+  const promo = /desde S\/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico/;
+  const pending = promoLanding.vigencia === PENDIENTE;
+  const date = pending ? '2026-12-20' : promoLanding.vigencia;
+  const endOfDay = new Date(`${date}T23:59:59-05:00`);
 
-  // El 21 ya empezó en UTC, pero en Lima sigue siendo el último día de la promo.
-  await page.clock.setFixedTime(new Date('2026-12-21T04:59:00Z'));
   for (const route of ['/', '/servicios/landing-pages']) {
+    await page.clock.setFixedTime(endOfDay);
     await page.goto(route);
     await expect(page.locator('#root header')).toBeAttached();
     await expect(description).toHaveAttribute('content', promo);
-  }
 
-  await page.clock.setFixedTime(new Date('2026-12-21T05:00:00Z'));
-  for (const route of ['/', '/servicios/landing-pages']) {
-    await page.goto(route);
+    await page.clock.setFixedTime(new Date(endOfDay.getTime() + 1000));
+    await page.reload();
     await expect(page.locator('#root header')).toBeAttached();
-    await expect(description).not.toHaveAttribute('content', promo);
+    if (pending) {
+      await expect(description).toHaveAttribute('content', promo);
+    } else {
+      await expect(description).not.toHaveAttribute('content', promo);
+    }
   }
 });
 
@@ -80,7 +85,8 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     test.setTimeout(60_000);
     const errors = trackPageErrors(page);
     await page.setViewportSize({ width: 1440, height: 960 });
-    await page.clock.setFixedTime(new Date('2026-12-20T17:00:00Z'));
+    const promoDate = promoLanding.vigencia === PENDIENTE ? '2026-12-20' : promoLanding.vigencia;
+    await page.clock.setFixedTime(new Date(`${promoDate}T12:00:00-05:00`));
     await page.goto('/');
 
     // Verificar pantalla de carga CRT inicial con rallitas y luego transición al inicio
@@ -192,7 +198,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     // Clic en la cinta abre la ficha de Landing pages
     await page.locator('[data-slot-offset="0"] .carousel-card-link').click();
     await expect(page).toHaveURL(/\/servicios\/landing-pages$/);
-    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
+    await expect(page.locator('h1')).toContainText(/Optimizada para\s*buscadores/);
 
     // Volver a servicios regresa a la cinta
     await page.getByRole('link', { name: '[ VOLVER A SERVICIOS ]' }).click();
@@ -266,7 +272,7 @@ test.describe('Zeguetti Web — Verificación completa', () => {
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
     await page.reload();
     await expect(page.locator('.crt-loader')).toBeHidden({ timeout: 5000 });
-    await expect(page.locator('h1')).toContainText('Posiciona y muestra');
+    await expect(page.locator('h1')).toContainText(/Optimizada para\s*buscadores/);
 
     // Ficha con caso real: monitor con la web del cliente
     await expect(page.locator('.monitor-stage img')).toBeVisible();

@@ -13,10 +13,13 @@ export interface Advisor {
 }
 
 export const advisors: Advisor[] = [
-  { id: 'asesor-1', label: 'ASESOR 01', e164: '51922040557', display: '+51 922 040 557' },
-  { id: 'asesor-2', label: 'ASESOR 02', e164: '51907136664', display: '+51 907 136 664' },
-  { id: 'asesor-3', label: 'ASESOR 03', e164: '51948792314', display: '+51 948 792 314' },
-];
+  { id: 'asesor-1', label: 'ASESOR 01', e164: '51922040557' },
+  { id: 'asesor-2', label: 'ASESOR 02', e164: '51907136664' },
+  { id: 'asesor-3', label: 'ASESOR 03', e164: '51948792314' },
+].map((advisor) => ({
+  ...advisor,
+  display: `+${advisor.e164.replace(/^(51)(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4')}`,
+}));
 
 export interface QuoteDraft {
   /** Nombre del servicio elegido; vacio = aun no lo sabe. */

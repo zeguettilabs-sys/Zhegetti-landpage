@@ -1,17 +1,19 @@
 import { expect, test } from '@playwright/test';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { PENDIENTE, promoLanding } from '../src/config/legal';
 
 const dist = resolve('dist');
 const site = 'https://www.zeguetti.com';
-const promoEnLima = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date()) <= '2026-12-20';
+const todayInLima = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date());
+const promoEnLima = promoLanding.vigencia === PENDIENTE || todayInLima <= promoLanding.vigencia;
 
 const pages = [
   {
     file: 'index.html',
     title: 'Diseño web y landing pages en Perú | Zeguetti',
     description: promoEnLima
-      ? 'El diseño web que tu negocio merecía. Landing pages en Perú desde S/ 100 con dominio, mantenimiento por 1 año y SEO.'
+      ? 'El diseño web que tu negocio merecía. Landing pages en Perú desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico.'
       : 'El diseño web que tu negocio merecía. Creamos tu página web o landing page a medida, adaptada a celulares y con contacto por WhatsApp.',
     canonical: `${site}/`,
   },
@@ -56,8 +58,8 @@ const pages = [
     file: 'servicios/landing-pages.html',
     title: 'Diseño de landing pages para tu negocio | Zeguetti',
     description: promoEnLima
-      ? 'Diseñamos tu landing page desde S/ 100 con dominio, mantenimiento por 1 año y SEO. Presenta tu negocio y recibe consultas por WhatsApp.'
-      : 'Diseñamos tu landing page a medida para presentar tu negocio, destacar en Google y recibir consultas por WhatsApp desde cualquier dispositivo.',
+      ? 'Diseñamos tu landing page desde S/ 100 con dominio por 1 año, mantenimiento por 1 año y SEO básico. Presenta tu negocio y recibe consultas por WhatsApp.'
+      : 'Diseñamos tu landing page a medida, optimizada para buscadores, para presentar tu negocio y recibir consultas por WhatsApp desde cualquier dispositivo.',
     canonical: `${site}/servicios/landing-pages`,
   },
   {

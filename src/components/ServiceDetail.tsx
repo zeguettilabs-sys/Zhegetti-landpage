@@ -12,6 +12,7 @@ import { useAdvisors } from './AdvisorDialog';
 import { CaseStudy, MonitorShot } from './CaseStudy';
 import { ContactActions } from './ContactSection';
 import { PromoCard } from './PromoCard';
+import { PromoConditions } from './PromoConditions';
 import { CurvedGallery, GALLERY_SLIDE_META } from './CurvedGallery';
 import { ServiceMockup } from './ServiceMockup';
 import { VcrFooter } from './VcrStatus';
@@ -403,6 +404,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                   <button
                     type="button"
                     className="crt-btn crt-btn--primary promo-open"
+                    aria-describedby="service-promo-conditions"
                     onClick={() => openAdvisors(service.id, { promo: true })}
                   >
                     [ VER PROMO DESDE {promo.priceLabel} ]
@@ -416,6 +418,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                   [ VOLVER A SERVICIOS ]
                 </Link>
               </div>
+              {promo?.poster && <PromoConditions id="service-promo-conditions" />}
             </div>
 
             {service.caseStudy?.hero ? (

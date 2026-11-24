@@ -5494,6 +5494,29 @@ html.lite *::after {
   color: var(--color-accent-readable);
 }
 
+.promo-conditions {
+  max-width: 36rem;
+  margin-top: 6px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  text-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .detail-hero .promo-conditions {
+    font-size: 0.75rem;
+  }
+}
+
+.carousel-caption .promo-conditions {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--color-screen-deep);
+}
+
 .promo-box {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -5615,6 +5638,7 @@ html.lite *::after {
   --gx: 50%;
   --gy: 30%;
   position: relative;
+  container-type: inline-size;
   display: block;
   height: clamp(300px, 58svh, 560px);
   aspect-ratio: 900 / 1125;
@@ -5648,6 +5672,36 @@ html.lite *::after {
   border-radius: 10px;
   object-fit: cover;
   user-select: none;
+}
+
+.promo-card :is(.promo-card__seo, .promo-card__date, .promo-card__phone) {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-screen-deep);
+  color: var(--color-text);
+  font-family: var(--font-interface);
+  font-size: 3.15cqw;
+  font-weight: normal;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.promo-card .promo-card__seo {
+  inset: 78.8% 46% 18.8% 18.3%;
+  justify-content: flex-start;
+  padding-left: 0.75cqw;
+}
+
+.promo-card__date {
+  inset: 82.2% 21% 15.1%;
+}
+
+.promo-card__phone {
+  inset: 93% 46% 4.6% 12.7%;
+  letter-spacing: 0.05em;
 }
 
 .promo-card__glare {

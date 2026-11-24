@@ -1,10 +1,14 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { LegalPage } from '../components/LegalPage';
-import { legal } from '../config/legal';
+import { legal, PENDIENTE } from '../config/legal';
+import { formatEmailHref } from '../config/site';
 import { libroSeo, privacidadSeo } from '../seo/metadata';
 
 const endpoint = import.meta.env.VITE_LIBRO_RECLAMACIONES_ENDPOINT?.trim();
+const legalEmail = legal.correoLegal.trim();
+const emailFallback = !endpoint && legalEmail !== PENDIENTE && Boolean(legalEmail);
+const canSubmit = Boolean(endpoint || emailFallback);
 
 const receiptFields = [
   ['tipo', 'Tipo de solicitud'],
@@ -26,6 +30,20 @@ const receiptFields = [
   ['pedido', 'Pedido del consumidor'],
   ['confirmacion', 'Confirmación del consumidor'],
 ] as const;
+
+function openComplaintEmail(fields: Record<string, string>) {
+  const body = [
+    'Hoja de Reclamación',
+    `Proveedor: ${legal.razonSocial}`,
+    `RUC: ${legal.ruc}`,
+    `Domicilio del proveedor: ${legal.domicilio}`,
+    ...receiptFields.map(([name, label]) => `${label}: ${fields[name] || (name === 'menorDeEdad' ? 'No' : '—')}`),
+  ].join('\n').replace(/\r?\n/g, '\r\n');
+  const subject = encodeURIComponent('Hoja de Reclamación');
+  const link = document.createElement('a');
+  link.href = `${formatEmailHref(legalEmail)}?subject=${subject}&body=${encodeURIComponent(body)}`;
+  link.click();
+}
 
 type Receipt = {
   numero: string;
@@ -51,11 +69,15 @@ export function ComplaintsPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!endpoint || sending) return;
+    if (!canSubmit || sending) return;
 
     const fields = Object.fromEntries(
       Array.from(new FormData(event.currentTarget), ([name, value]) => [name, String(value).trim()])
     );
+    if (!endpoint) {
+      openComplaintEmail(fields);
+      return;
+    }
     const body = JSON.stringify(fields);
 
     setSending(true);
@@ -91,9 +113,16 @@ export function ComplaintsPage() {
       <section>
         <h2>Hoja de Reclamación</h2>
         <p>Un reclamo expresa disconformidad con un producto o servicio. Una queja se refiere a la atención recibida u otro motivo ajeno al producto o servicio.</p>
-        <p>El proveedor debe responder en un máximo de 15 días hábiles, sin prórroga. Presentar esta hoja permite también acudir al Indecopi cuando corresponda.</p>
-        <p>Se enviará una copia de la hoja al correo del consumidor.</p>
-        {!endpoint && <p role="status">Libro de Reclamaciones en implementación. El envío todavía no está disponible.</p>}
+        <p>El proveedor deberá dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles improrrogables.</p>
+        <p>La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el Indecopi.</p>
+        {endpoint && <p>Se enviará una copia de la hoja al correo del consumidor.</p>}
+        {emailFallback && (
+          <p id="complaint-email-notice">
+            La hoja se envía por correo electrónico. Al continuar, se abrirá un borrador en tu aplicación de correo.
+            Envíalo desde allí y conserva una copia. Recibirás respuesta en el plazo legal.
+          </p>
+        )}
+        {!canSubmit && <p role="status">Libro de Reclamaciones en implementación. El envío todavía no está disponible.</p>}
       </section>
       {receipt ? (
         <section className="complaint-receipt">
@@ -113,10 +142,10 @@ export function ComplaintsPage() {
           <button type="button" className="crt-btn" onClick={() => window.print()}>Imprimir mi copia</button>
         </section>
       ) : (
-        <form className="complaint-form" onSubmit={submit} aria-busy={sending}>
+        <form className="complaint-form" onSubmit={submit} aria-busy={sending} aria-describedby={emailFallback ? 'complaint-email-notice' : undefined}>
           <p>Los campos marcados como «opcional» pueden quedar en blanco.</p>
 
-          <fieldset disabled={!endpoint || sending}>
+          <fieldset disabled={!canSubmit || sending}>
             <legend>Datos del consumidor</legend>
             <label>Nombres y apellidos del consumidor
               <input name="nombre" autoComplete="section-consumidor name" required />
@@ -166,7 +195,7 @@ export function ComplaintsPage() {
             </fieldset>
           )}
 
-          <fieldset disabled={!endpoint || sending}>
+          <fieldset disabled={!canSubmit || sending}>
             <legend>Identificación del bien o servicio</legend>
             <label>Tipo de bien
               <select name="bienTipo" required defaultValue="">
@@ -183,7 +212,7 @@ export function ComplaintsPage() {
             </label>
           </fieldset>
 
-          <fieldset disabled={!endpoint || sending}>
+          <fieldset disabled={!canSubmit || sending}>
             <legend>Motivo y pedido</legend>
             <label className="complaint-form__wide">Tipo de solicitud
               <select name="tipo" required defaultValue="">
@@ -206,8 +235,8 @@ export function ComplaintsPage() {
 
           <p>Consulta cómo trataremos tus datos en la <Link to={privacidadSeo.path}>Política de privacidad</Link>.</p>
           {error && <p role="alert">{error}</p>}
-          <button type="submit" className="crt-btn" disabled={!endpoint || sending}>
-            {sending ? 'Enviando…' : 'Enviar hoja de reclamación'}
+          <button type="submit" className="crt-btn" disabled={!canSubmit || sending}>
+            {sending ? 'Enviando…' : emailFallback ? 'Abrir correo con la hoja' : 'Enviar hoja de reclamación'}
           </button>
         </form>
       )}

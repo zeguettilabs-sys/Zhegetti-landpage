@@ -1,9 +1,31 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { createServer } from 'vite';
 
 test.use({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
 
 const complaintsEndpoint = process.env.VITE_LIBRO_RECLAMACIONES_ENDPOINT;
 const analyticsScript = process.env.VITE_ANALYTICS_SCRIPT_URL;
+
+async function fillComplaint(page: Page) {
+  await page.getByLabel('Nombres y apellidos del consumidor').fill('Persona de prueba');
+  await page.getByLabel('Tipo de documento').selectOption('DNI');
+  await page.getByLabel('Número de documento').fill('00000000');
+  await page.getByLabel('Domicilio del consumidor').fill('Dirección de prueba');
+  await page.getByLabel('Teléfono del consumidor').fill('900000000');
+  await page.getByLabel('Correo electrónico del consumidor').fill('prueba@example.com');
+  await page.getByLabel('El consumidor es menor de edad').check();
+  await page.getByLabel('Nombres y apellidos del representante').fill('Representante de prueba');
+  await page.getByLabel('Domicilio del representante').fill('Dirección de prueba');
+  await page.getByLabel('Teléfono del representante').fill('900000000');
+  await page.getByLabel('Correo electrónico del representante').fill('representante@example.com');
+  await page.getByLabel('Tipo de bien').selectOption('Servicio');
+  await page.getByLabel('Identificación del producto o servicio').fill('Landing page');
+  await page.getByLabel('Monto reclamado en soles').fill('100.00');
+  await page.getByLabel('Tipo de solicitud').selectOption('Reclamo');
+  await page.getByLabel('Detalle del reclamo o queja').fill('Descripción de prueba');
+  await page.getByLabel('Pedido del consumidor').fill('Pedido de prueba');
+  await page.getByLabel(/Confirmo que los datos/).check();
+}
 
 test('El pie legal permite navegar a las tres páginas desde el inicio', async ({ page }) => {
   await page.goto('/');
@@ -51,8 +73,79 @@ test('El Libro conserva el formulario y avisa cuando el envío está deshabilita
   await expect(page.getByLabel('Monto reclamado en soles')).toBeVisible();
   await expect(page.getByLabel('Pedido del consumidor')).toBeVisible();
   await expect(page.getByLabel('El consumidor es menor de edad')).toBeVisible();
-  await expect(page.getByText('Se enviará una copia de la hoja al correo del consumidor.')).toBeVisible();
+  await expect(page.getByText('El proveedor deberá dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles improrrogables.')).toBeVisible();
+  await expect(page.getByText('La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el Indecopi.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Enviar hoja de reclamación' })).toBeDisabled();
+});
+
+test('El Libro abre la hoja completa por correo cuando hay dirección legal y falta el endpoint', async ({ page }) => {
+  const email = 'libro@example.test';
+  const server = await createServer({
+    define: {
+      'import.meta.env.VITE_LIBRO_RECLAMACIONES_ENDPOINT': '""',
+      'import.meta.env.VITE_ANALYTICS_SCRIPT_URL': '""',
+    },
+    plugins: [{
+      name: 'correo-legal-de-prueba',
+      enforce: 'pre',
+      transform(source, id) {
+        if (id.endsWith('/src/config/legal.ts')) {
+          return `${source}\nlegal.correoLegal = ${JSON.stringify(email)};`;
+        }
+      },
+    }],
+    server: { host: '127.0.0.1', port: 0, hmr: false, watch: null },
+  });
+  try {
+    await server.listen();
+    await page.addInitScript(() => {
+      const click = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        if (this.protocol === 'mailto:') {
+          document.documentElement.dataset.complaintMailto = this.href;
+        } else {
+          click.call(this);
+        }
+      };
+    });
+    const url = server.resolvedUrls!.local[0];
+    await page.goto(new URL('/libro-de-reclamaciones', url).href);
+    await expect(page.getByText(/La hoja se envía por correo electrónico/)).toBeVisible();
+    await expect(page.getByText(/Recibirás respuesta en el plazo legal/)).toBeVisible();
+    await fillComplaint(page);
+    await page.getByLabel('Detalle del reclamo o queja').fill('Descripción con ñ, & y #\nSegunda línea');
+    await page.getByRole('button', { name: 'Abrir correo con la hoja' }).click();
+
+    const html = page.locator('html');
+    await expect(html).toHaveAttribute('data-complaint-mailto', /^mailto:/);
+    const href = await html.getAttribute('data-complaint-mailto');
+    const mail = new URL(href!);
+    expect(mail.protocol).toBe('mailto:');
+    expect(mail.pathname).toBe(email);
+    expect(mail.searchParams.get('body')?.split('\r\n')).toEqual(expect.arrayContaining([
+      'Tipo de solicitud: Reclamo',
+      'Nombres y apellidos del consumidor: Persona de prueba',
+      'Tipo de documento: DNI',
+      'Número de documento: 00000000',
+      'Domicilio del consumidor: Dirección de prueba',
+      'Teléfono del consumidor: 900000000',
+      'Correo electrónico del consumidor: prueba@example.com',
+      'El consumidor es menor de edad: Sí',
+      'Nombres y apellidos del representante: Representante de prueba',
+      'Domicilio del representante: Dirección de prueba',
+      'Teléfono del representante: 900000000',
+      'Correo electrónico del representante: representante@example.com',
+      'Tipo de bien: Servicio',
+      'Identificación del producto o servicio: Landing page',
+      'Monto reclamado en soles: 100.00',
+      'Detalle del reclamo o queja: Descripción con ñ, & y #',
+      'Segunda línea',
+      'Pedido del consumidor: Pedido de prueba',
+      'Confirmación del consumidor: Sí',
+    ]));
+  } finally {
+    await server.close();
+  }
 });
 
 if (complaintsEndpoint) {
@@ -67,24 +160,8 @@ if (complaintsEndpoint) {
 
     await page.goto('/libro-de-reclamaciones');
     if (analyticsScript) await page.getByRole('button', { name: 'Rechazar analítica' }).click();
-    await page.getByLabel('Nombres y apellidos del consumidor').fill('Persona de prueba');
-    await page.getByLabel('Tipo de documento').selectOption('DNI');
-    await page.getByLabel('Número de documento').fill('00000000');
-    await page.getByLabel('Domicilio del consumidor').fill('Dirección de prueba');
-    await page.getByLabel('Teléfono del consumidor').fill('900000000');
-    await page.getByLabel('Correo electrónico del consumidor').fill('prueba@example.com');
-    await page.getByLabel('El consumidor es menor de edad').check();
-    await page.getByLabel('Nombres y apellidos del representante').fill('Representante de prueba');
-    await page.getByLabel('Domicilio del representante').fill('Dirección de prueba');
-    await page.getByLabel('Teléfono del representante').fill('900000000');
-    await page.getByLabel('Correo electrónico del representante').fill('representante@example.com');
-    await page.getByLabel('Tipo de bien').selectOption('Servicio');
-    await page.getByLabel('Identificación del producto o servicio').fill('Landing page');
-    await page.getByLabel('Monto reclamado en soles').fill('100.00');
-    await page.getByLabel('Tipo de solicitud').selectOption('Reclamo');
-    await page.getByLabel('Detalle del reclamo o queja').fill('Descripción de prueba');
-    await page.getByLabel('Pedido del consumidor').fill('Pedido de prueba');
-    await page.getByLabel(/Confirmo que los datos/).check();
+    await expect(page.getByText('Se enviará una copia de la hoja al correo del consumidor.')).toBeVisible();
+    await fillComplaint(page);
 
     const submit = page.getByRole('button', { name: 'Enviar hoja de reclamación' });
     await submit.click();

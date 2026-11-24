@@ -51,7 +51,6 @@ export function ShowcaseLightbox({ cards, index, from, onIndex, onClose }: Showc
       { duration: 520, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
     );
     // Solo al abrir
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const close = useCallback(() => {

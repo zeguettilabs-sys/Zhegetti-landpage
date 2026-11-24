@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.app.json --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -20,12 +21,15 @@
     "three": "0.187.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.52.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@types/three": "0.187.0",
     "@vitejs/plugin-react": "^4.5.0",
+    "eslint": "^10.15.0",
     "typescript": "^5.8.0",
+    "typescript-eslint": "^8.74.0",
     "vite": "^6.3.0"
   },
   "description": "Zeguetti — diseño web y landing pages a medida para negocios en Perú."

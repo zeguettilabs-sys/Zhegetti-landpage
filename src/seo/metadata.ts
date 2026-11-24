@@ -33,6 +33,24 @@ export const contactSeo = {
   description: 'Cotiza el diseño de tu página web o landing page con Zeguetti por WhatsApp o correo.',
 };
 
+export const terminosSeo = {
+  path: '/terminos',
+  title: `Términos de uso | ${brandName}`,
+  description: 'Consulta los términos de uso de Zeguetti y las condiciones generales de sus ofertas de diseño web.',
+};
+
+export const privacidadSeo = {
+  path: '/privacidad',
+  title: `Política de privacidad | ${brandName}`,
+  description: 'Conoce cómo Zeguetti trata tus datos personales y cómo puedes ejercer tus derechos de privacidad en Perú.',
+};
+
+export const libroSeo = {
+  path: '/libro-de-reclamaciones',
+  title: `Libro de Reclamaciones | ${brandName}`,
+  description: 'Accede al Libro de Reclamaciones virtual de Zeguetti para presentar un reclamo o una queja.',
+};
+
 export const showcaseSeo = {
   path: '/vitrina',
   title: `Vitrina — ${brandName}`,

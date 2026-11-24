@@ -7,10 +7,14 @@ import { CrtTubeDefs } from './components/CrtTube';
 import { PageTransition } from './components/PageTransition';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
+import { ComplaintsPage } from './pages/ComplaintsPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
 import { ServicePage } from './pages/ServicePage';
 import { ShowcasePage } from './pages/ShowcasePage';
+import { libroSeo, privacidadSeo, terminosSeo } from './seo/metadata';
 
 export function App() {
   const [showLoader, setShowLoader] = useState<boolean>(true);
@@ -35,6 +39,9 @@ export function App() {
           <Route path="/nosotros" element={<AboutPage />} />
           <Route path="/vitrina" element={<ShowcasePage />} />
           <Route path="/contacto" element={<ContactPage />} />
+          <Route path={privacidadSeo.path} element={<PrivacyPage />} />
+          <Route path={terminosSeo.path} element={<TermsPage />} />
+          <Route path={libroSeo.path} element={<ComplaintsPage />} />
           <Route path="/servicios/:serviceId" element={<ServicePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

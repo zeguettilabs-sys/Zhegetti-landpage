@@ -28,6 +28,24 @@ const pages = [
     canonical: `${site}/contacto`,
   },
   {
+    file: 'terminos.html',
+    title: 'Términos de uso | Zeguetti',
+    description: 'Consulta los términos de uso de Zeguetti y las condiciones generales de sus ofertas de diseño web.',
+    canonical: `${site}/terminos`,
+  },
+  {
+    file: 'privacidad.html',
+    title: 'Política de privacidad | Zeguetti',
+    description: 'Conoce cómo Zeguetti trata tus datos personales y cómo puedes ejercer tus derechos de privacidad en Perú.',
+    canonical: `${site}/privacidad`,
+  },
+  {
+    file: 'libro-de-reclamaciones.html',
+    title: 'Libro de Reclamaciones | Zeguetti',
+    description: 'Accede al Libro de Reclamaciones virtual de Zeguetti para presentar un reclamo o una queja.',
+    canonical: `${site}/libro-de-reclamaciones`,
+  },
+  {
     file: 'vitrina.html',
     title: 'Vitrina — Zeguetti',
     description: 'Vitrina de diseño web de Zeguetti.',
@@ -81,7 +99,7 @@ test('El build omite las fichas ocultas', () => {
   }
 });
 
-test('El sitemap de dist contiene solo las cuatro rutas públicas indexables', async ({ page }) => {
+test('El sitemap de dist contiene las rutas públicas indexables, incluidas las legales', async ({ page }) => {
   const xml = readFileSync(resolve(dist, 'sitemap.xml'), 'utf8');
   const urls = await page.evaluate((source) => {
     const doc = new DOMParser().parseFromString(source, 'application/xml');
@@ -90,7 +108,10 @@ test('El sitemap de dist contiene solo las cuatro rutas públicas indexables', a
   expect(urls.sort()).toEqual([
     `${site}/`,
     `${site}/contacto`,
+    `${site}/libro-de-reclamaciones`,
     `${site}/nosotros`,
+    `${site}/privacidad`,
     `${site}/servicios/landing-pages`,
+    `${site}/terminos`,
   ]);
 });

@@ -12,6 +12,9 @@ import {
   notFoundSeo,
   serviceSeo,
   showcaseSeo,
+  libroSeo,
+  privacidadSeo,
+  terminosSeo,
 } from './src/seo/metadata';
 
 interface PageSeo {
@@ -37,6 +40,9 @@ function seoPlugin(siteUrl: string): Plugin {
     home,
     aboutSeo,
     contactSeo,
+    terminosSeo,
+    privacidadSeo,
+    libroSeo,
     ...services.map(serviceSeo),
     showcaseSeo,
     { ...notFoundSeo, path: '/404' },

@@ -1,6 +1,7 @@
 import { useRef, type ReactNode } from 'react';
 import { useCrtWarp } from '../hooks/useCrtWarp';
 import { CrtTubeLayers } from './CrtTube';
+import { LegalFooter } from './LegalFooter';
 
 interface CrtShellProps {
   children: ReactNode;
@@ -28,7 +29,10 @@ export function CrtShell({
         </a>
         <div className="crt-screen__glare" aria-hidden="true" />
         <div className="crt-screen__scanlines" aria-hidden="true" />
-        <div className="crt-content">{children}</div>
+        <div className="crt-content">
+          {children}
+          <LegalFooter />
+        </div>
         <CrtTubeLayers />
       </div>
     </div>

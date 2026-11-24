@@ -2405,6 +2405,188 @@ html.bw .bw-filter {
   padding: clamp(8px, 1.2svh, 14px) clamp(20px, 4.4vw, 64px) clamp(10px, 1.5svh, 18px);
 }
 
+.legal-footer {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  display: grid;
+  gap: 6px;
+  padding: 8px clamp(20px, 4.4vw, 64px) 14px;
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-screen-deep);
+  color: var(--color-text);
+  font-family: var(--font-interface);
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.legal-footer__identity,
+.legal-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+
+.legal-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.legal-footer a,
+.legal-page a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.legal-page {
+  max-width: 880px;
+  justify-content: flex-start;
+  padding-bottom: 32px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.crt-content .legal-page :is(h1, h2, p) {
+  filter: none;
+}
+
+.legal-page section {
+  display: grid;
+  gap: 8px;
+}
+
+.legal-page h2 {
+  margin: 0;
+  color: var(--color-emphasis);
+  font-family: var(--font-interface);
+  font-size: 1.65rem;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+.legal-page :is(p, ul, dl) {
+  margin: 0;
+}
+
+.legal-page li + li {
+  margin-top: 8px;
+}
+
+.legal-list {
+  display: grid;
+  gap: 8px;
+}
+
+.legal-list dt {
+  font-weight: 600;
+}
+
+.legal-list dd {
+  margin: 0;
+}
+
+.complaint-form,
+.complaint-form fieldset {
+  display: grid;
+  gap: 14px;
+}
+
+.complaint-form fieldset {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border-card);
+}
+
+.complaint-form legend {
+  padding: 0 6px;
+  color: var(--color-emphasis);
+  font-family: var(--font-interface);
+  font-size: 1.4rem;
+}
+
+.complaint-form label {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.complaint-form :is(input:not([type='checkbox']), select, textarea) {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--color-muted);
+  border-radius: 4px;
+  background: var(--color-screen-deep);
+  color: var(--color-emphasis);
+  font: inherit;
+}
+
+.complaint-form textarea {
+  resize: vertical;
+}
+
+.complaint-form :disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.complaint-form__wide {
+  grid-column: 1 / -1;
+}
+
+.complaint-form label.complaint-form__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.complaint-form__checkbox input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 4px 0 0;
+  accent-color: var(--color-accent);
+}
+
+.complaint-form button,
+.complaint-receipt button {
+  justify-self: start;
+}
+
+.complaint-receipt dd {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 599px) {
+  .complaint-form fieldset {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  body:has(.complaint-receipt) .crt-content > :not(.legal-page),
+  body:has(.complaint-receipt) .legal-page > :not(.complaint-receipt),
+  body:has(.complaint-receipt) :is(.crt-content ~ *, .crt-content > *, .complaint-receipt button):not(.legal-page),
+  body:has(.complaint-receipt) .crt-screen > :not(.crt-content) {
+    display: none !important;
+  }
+
+  body:has(.complaint-receipt) :is(.crt-outer, .crt-screen, .crt-content, .legal-page, .legal-page h2) {
+    background: white;
+    color: black;
+    clip-path: none;
+    box-shadow: none;
+    text-shadow: none;
+    filter: none;
+  }
+}
+
 .subpage-shell {
   width: 100%;
   max-width: 1380px;
